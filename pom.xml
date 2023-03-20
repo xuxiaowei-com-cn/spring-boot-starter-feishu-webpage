@@ -8,7 +8,7 @@
         <version>2.7.1</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
-    <groupId>cn.com.xuxiaowei.boot</groupId>
+    <groupId>cn.com.xuxiaowei.boot.next</groupId>
     <artifactId>spring-boot-starter-feishu</artifactId>
     <version>0.1.0-SNAPSHOT</version>
 
