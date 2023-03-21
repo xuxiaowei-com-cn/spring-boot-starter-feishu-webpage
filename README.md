@@ -1,6 +1,6 @@
 <div align="center" style="text-align: center;">
     <h1>spring-boot-starter-feishu-webpage</h1>
-    <h3>支持 OAuth 2.1 JWT 授权的飞书平台开发组件网页应用</h3>
+    <h3>支持 OAuth 2.1 JWT 授权的飞书平台网页应用开发组件</h3>
     <a target="_blank" href="https://github.com/996icu/996.ICU/blob/master/LICENSE">
         <img alt="License-Anti" src="https://img.shields.io/badge/License-Anti 996-blue.svg">
     </a>
@@ -157,7 +157,7 @@
   mvn spring-javaformat:apply
   ```
 
-## [示例项目](https://gitee.com/xuxiaowei-com-cn/wechat-work-example)
+## [示例项目](https://gitee.com/xuxiaowei-com-cn/feishu-example)
 
 ## 批量添加远端仓库地址
 
