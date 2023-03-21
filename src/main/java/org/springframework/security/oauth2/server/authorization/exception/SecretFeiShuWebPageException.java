@@ -23,30 +23,30 @@ package org.springframework.security.oauth2.server.authorization.exception;
 import org.springframework.security.oauth2.core.OAuth2Error;
 
 /**
- * 飞书 redirectUri 异常
+ * 飞书 Secret 异常
  *
  * @author xuxiaowei
  * @since 0.0.1
  */
-public class RedirectUriFeiShuException extends FeiShuException {
+public class SecretFeiShuWebPageException extends FeiShuWebPageException {
 
-	public RedirectUriFeiShuException(String errorCode) {
+	public SecretFeiShuWebPageException(String errorCode) {
 		super(errorCode);
 	}
 
-	public RedirectUriFeiShuException(OAuth2Error error) {
+	public SecretFeiShuWebPageException(OAuth2Error error) {
 		super(error);
 	}
 
-	public RedirectUriFeiShuException(OAuth2Error error, Throwable cause) {
+	public SecretFeiShuWebPageException(OAuth2Error error, Throwable cause) {
 		super(error, cause);
 	}
 
-	public RedirectUriFeiShuException(OAuth2Error error, String message) {
+	public SecretFeiShuWebPageException(OAuth2Error error, String message) {
 		super(error, message);
 	}
 
-	public RedirectUriFeiShuException(OAuth2Error error, String message, Throwable cause) {
+	public SecretFeiShuWebPageException(OAuth2Error error, String message, Throwable cause) {
 		super(error, message, cause);
 	}
 

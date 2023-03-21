@@ -24,9 +24,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.oauth2.server.authorization.client.InMemoryFeiShuService;
-import org.springframework.security.oauth2.server.authorization.client.FeiShuService;
-import org.springframework.security.oauth2.server.authorization.properties.FeiShuProperties;
+import org.springframework.security.oauth2.server.authorization.client.InMemoryFeiShuWebPageService;
+import org.springframework.security.oauth2.server.authorization.client.FeiShuWebPageService;
+import org.springframework.security.oauth2.server.authorization.properties.FeiShuWebPageProperties;
 
 /**
  * 飞书 配置
@@ -37,19 +37,19 @@ import org.springframework.security.oauth2.server.authorization.properties.FeiSh
  */
 @Configuration
 @SuppressWarnings("AlibabaClassNamingShouldBeCamel")
-public class OAuth2FeiShuConfiguration {
+public class OAuth2FeiShuWebPageConfiguration {
 
-	private FeiShuProperties feiShuProperties;
+	private FeiShuWebPageProperties feiShuWebPageProperties;
 
 	@Autowired
-	public void setFeiShuProperties(FeiShuProperties feiShuProperties) {
-		this.feiShuProperties = feiShuProperties;
+	public void setFeiShuProperties(FeiShuWebPageProperties feiShuWebPageProperties) {
+		this.feiShuWebPageProperties = feiShuWebPageProperties;
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public FeiShuService feiShuService() {
-		return new InMemoryFeiShuService(feiShuProperties);
+	public FeiShuWebPageService feiShuService() {
+		return new InMemoryFeiShuWebPageService(feiShuWebPageProperties);
 	}
 
 }

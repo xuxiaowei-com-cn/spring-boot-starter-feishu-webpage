@@ -33,9 +33,9 @@ import org.springframework.security.oauth2.server.authorization.OAuth2Authorizat
 import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationService;
 import org.springframework.security.oauth2.server.authorization.OAuth2TokenType;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
-import org.springframework.security.oauth2.server.authorization.client.FeiShuService;
-import org.springframework.security.oauth2.server.authorization.client.FeiShuTokenResponse;
-import org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers.OAuth2FeiShuConfigurerUtils;
+import org.springframework.security.oauth2.server.authorization.client.FeiShuWebPageService;
+import org.springframework.security.oauth2.server.authorization.client.FeiShuWebPageTokenResponse;
+import org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers.OAuth2FeiShuWebPageConfigurerUtils;
 import org.springframework.security.oauth2.server.authorization.context.AuthorizationServerContextHolder;
 import org.springframework.security.oauth2.server.authorization.oidc.authentication.OidcUserInfoAuthenticationProvider;
 import org.springframework.security.oauth2.server.authorization.token.DefaultOAuth2TokenContext;
@@ -67,7 +67,7 @@ import java.util.Set;
  * @see OidcUserInfoAuthenticationProvider
  */
 @SuppressWarnings("AlibabaClassNamingShouldBeCamel")
-public class OAuth2FeiShuAuthenticationProvider implements AuthenticationProvider {
+public class OAuth2FeiShuWebPageAuthenticationProvider implements AuthenticationProvider {
 
 	/**
 	 * @see OAuth2TokenContext#getAuthorizedScopes()
@@ -89,9 +89,9 @@ public class OAuth2FeiShuAuthenticationProvider implements AuthenticationProvide
 	private OAuth2TokenGenerator<? extends OAuth2Token> tokenGenerator;
 
 	@Setter
-	private FeiShuService feiShuService;
+	private FeiShuWebPageService feiShuWebPageService;
 
-	public OAuth2FeiShuAuthenticationProvider(HttpSecurity builder) {
+	public OAuth2FeiShuWebPageAuthenticationProvider(HttpSecurity builder) {
 		Assert.notNull(builder, "HttpSecurity 不能为空");
 		this.builder = builder;
 		builder.authenticationProvider(this);
@@ -103,7 +103,7 @@ public class OAuth2FeiShuAuthenticationProvider implements AuthenticationProvide
 		// 初始化变量默认值
 		variableDefaults();
 
-		OAuth2FeiShuAuthenticationToken grantAuthenticationToken = (OAuth2FeiShuAuthenticationToken) authentication;
+		OAuth2FeiShuWebPageAuthenticationToken grantAuthenticationToken = (OAuth2FeiShuWebPageAuthenticationToken) authentication;
 
 		String appid = grantAuthenticationToken.getAppid();
 		String code = grantAuthenticationToken.getCode();
@@ -138,23 +138,24 @@ public class OAuth2FeiShuAuthenticationProvider implements AuthenticationProvide
 			throw new OAuth2AuthenticationException(error);
 		}
 
-		FeiShuTokenResponse feiShuTokenResponse = feiShuService.getAccessTokenResponse(appid, code, ACCESS_TOKEN_URL);
+		FeiShuWebPageTokenResponse feiShuWebPageTokenResponse = feiShuWebPageService.getAccessTokenResponse(appid, code,
+				ACCESS_TOKEN_URL);
 
-		String openid = feiShuTokenResponse.getOpenid();
-		String unionid = feiShuTokenResponse.getUnionid();
+		String openid = feiShuWebPageTokenResponse.getOpenid();
+		String unionid = feiShuWebPageTokenResponse.getUnionid();
 
-		String accessToken = feiShuTokenResponse.getAccessToken();
-		String refreshToken = feiShuTokenResponse.getRefreshToken();
-		Integer expiresIn = feiShuTokenResponse.getExpiresIn();
-		String scope = feiShuTokenResponse.getScope();
+		String accessToken = feiShuWebPageTokenResponse.getAccessToken();
+		String refreshToken = feiShuWebPageTokenResponse.getRefreshToken();
+		Integer expiresIn = feiShuWebPageTokenResponse.getExpiresIn();
+		String scope = feiShuWebPageTokenResponse.getScope();
 
 		OAuth2Authorization.Builder builder = OAuth2Authorization.withRegisteredClient(registeredClient);
 		builder.principalName(openid);
-		builder.authorizationGrantType(OAuth2FeiShuAuthenticationToken.FEISHU);
+		builder.authorizationGrantType(OAuth2FeiShuWebPageAuthenticationToken.FEISHU_WEBPAGE);
 
-		AbstractAuthenticationToken abstractAuthenticationToken = feiShuService.authenticationToken(clientPrincipal,
-				additionalParameters, grantAuthenticationToken.getDetails(), appid, code, openid, null, unionid,
-				accessToken, refreshToken, expiresIn, scope);
+		AbstractAuthenticationToken abstractAuthenticationToken = feiShuWebPageService.authenticationToken(
+				clientPrincipal, additionalParameters, grantAuthenticationToken.getDetails(), appid, code, openid, null,
+				unionid, accessToken, refreshToken, expiresIn, scope);
 
 		builder.attribute(Principal.class.getName(), abstractAuthenticationToken);
 		builder.attribute(AUTHORIZED_SCOPE_KEY, requestedScopes);
@@ -168,7 +169,7 @@ public class OAuth2FeiShuAuthenticationProvider implements AuthenticationProvide
 				.authorizationServerContext(AuthorizationServerContextHolder.getContext())
 				.authorization(authorization)
 				.authorizedScopes(authorization.getAttribute(AUTHORIZED_SCOPE_KEY))
-				.authorizationGrantType(OAuth2FeiShuAuthenticationToken.FEISHU)
+				.authorizationGrantType(OAuth2FeiShuWebPageAuthenticationToken.FEISHU_WEBPAGE)
 				.authorizationGrant(grantAuthenticationToken);
 		// @formatter:on
 
@@ -220,7 +221,7 @@ public class OAuth2FeiShuAuthenticationProvider implements AuthenticationProvide
 
 	@Override
 	public boolean supports(Class<?> authentication) {
-		return OAuth2FeiShuAuthenticationToken.class.isAssignableFrom(authentication);
+		return OAuth2FeiShuWebPageAuthenticationToken.class.isAssignableFrom(authentication);
 	}
 
 	/**
@@ -228,15 +229,15 @@ public class OAuth2FeiShuAuthenticationProvider implements AuthenticationProvide
 	 */
 	private void variableDefaults() {
 		if (authorizationService == null) {
-			authorizationService = OAuth2FeiShuConfigurerUtils.getAuthorizationService(builder);
+			authorizationService = OAuth2FeiShuWebPageConfigurerUtils.getAuthorizationService(builder);
 		}
 
 		if (tokenGenerator == null) {
-			tokenGenerator = OAuth2FeiShuConfigurerUtils.getTokenGenerator(builder);
+			tokenGenerator = OAuth2FeiShuWebPageConfigurerUtils.getTokenGenerator(builder);
 		}
 
-		if (feiShuService == null) {
-			feiShuService = OAuth2FeiShuConfigurerUtils.getFeiShuService(builder);
+		if (feiShuWebPageService == null) {
+			feiShuWebPageService = OAuth2FeiShuWebPageConfigurerUtils.getFeiShuWebPageService(builder);
 		}
 	}
 

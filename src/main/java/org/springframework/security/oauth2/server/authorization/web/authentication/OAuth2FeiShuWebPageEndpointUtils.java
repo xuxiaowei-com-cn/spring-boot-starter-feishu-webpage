@@ -27,7 +27,7 @@ package org.springframework.security.oauth2.server.authorization.web.authenticat
  * @since 0.0.1
  */
 @SuppressWarnings("AlibabaClassNamingShouldBeCamel")
-public class OAuth2FeiShuEndpointUtils {
+public class OAuth2FeiShuWebPageEndpointUtils {
 
 	/**
 	 * 飞书网页开发 /网页授权

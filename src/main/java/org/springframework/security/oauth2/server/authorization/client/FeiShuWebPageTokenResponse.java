@@ -34,7 +34,7 @@ import java.io.Serializable;
  * "https://open.feishu.cn/document/common-capabilities/sso/web-application-sso/web-app-overview">登录流程</a>
  */
 @Data
-public class FeiShuTokenResponse implements Serializable {
+public class FeiShuWebPageTokenResponse implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 

@@ -42,14 +42,14 @@ import java.util.Map;
  * 客户端凭据授予的{@link Authentication} 实现。
  */
 @SuppressWarnings("AlibabaClassNamingShouldBeCamel")
-public class OAuth2FeiShuAuthenticationToken extends OAuth2AuthorizationGrantAuthenticationToken {
+public class OAuth2FeiShuWebPageAuthenticationToken extends OAuth2AuthorizationGrantAuthenticationToken {
 
 	private static final long serialVersionUID = SpringSecurityCoreVersion.SERIAL_VERSION_UID;
 
 	/**
 	 * 授权类型：飞书
 	 */
-	public static final AuthorizationGrantType FEISHU = new AuthorizationGrantType("feishu");
+	public static final AuthorizationGrantType FEISHU_WEBPAGE = new AuthorizationGrantType("feishu_webpage");
 
 	/**
 	 * AppID
@@ -86,9 +86,10 @@ public class OAuth2FeiShuAuthenticationToken extends OAuth2AuthorizationGrantAut
 	 * @param scope {@link OAuth2ParameterNames#SCOPE}，授权范围，<a href=
 	 * "https://open.feishu.cn/document/common-capabilities/sso/web-application-sso/web-app-overview">登录流程</a>
 	 */
-	public OAuth2FeiShuAuthenticationToken(Authentication clientPrincipal, Map<String, Object> additionalParameters,
-			String appid, String code, String scope, String remoteAddress, String sessionId) {
-		super(OAuth2FeiShuAuthenticationToken.FEISHU, clientPrincipal, additionalParameters);
+	public OAuth2FeiShuWebPageAuthenticationToken(Authentication clientPrincipal,
+			Map<String, Object> additionalParameters, String appid, String code, String scope, String remoteAddress,
+			String sessionId) {
+		super(OAuth2FeiShuWebPageAuthenticationToken.FEISHU_WEBPAGE, clientPrincipal, additionalParameters);
 		Assert.hasText(appid, "appid 不能为空");
 		Assert.hasText(code, "code 不能为空");
 		this.appid = appid;

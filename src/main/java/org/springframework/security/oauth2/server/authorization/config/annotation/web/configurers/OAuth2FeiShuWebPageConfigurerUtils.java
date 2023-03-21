@@ -23,9 +23,9 @@ package org.springframework.security.oauth2.server.authorization.config.annotati
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.oauth2.core.OAuth2Token;
 import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationService;
-import org.springframework.security.oauth2.server.authorization.client.FeiShuService;
-import org.springframework.security.oauth2.server.authorization.client.InMemoryFeiShuService;
-import org.springframework.security.oauth2.server.authorization.properties.FeiShuProperties;
+import org.springframework.security.oauth2.server.authorization.client.FeiShuWebPageService;
+import org.springframework.security.oauth2.server.authorization.client.InMemoryFeiShuWebPageService;
+import org.springframework.security.oauth2.server.authorization.properties.FeiShuWebPageProperties;
 import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenGenerator;
 
 /**
@@ -36,7 +36,7 @@ import org.springframework.security.oauth2.server.authorization.token.OAuth2Toke
  * @see OAuth2ConfigurerUtils
  */
 @SuppressWarnings("AlibabaClassNamingShouldBeCamel")
-public class OAuth2FeiShuConfigurerUtils {
+public class OAuth2FeiShuWebPageConfigurerUtils {
 
 	public static OAuth2AuthorizationService getAuthorizationService(HttpSecurity httpSecurity) {
 		return OAuth2ConfigurerUtils.getAuthorizationService(httpSecurity);
@@ -46,17 +46,17 @@ public class OAuth2FeiShuConfigurerUtils {
 		return OAuth2ConfigurerUtils.getTokenGenerator(httpSecurity);
 	}
 
-	public static FeiShuService getFeiShuService(HttpSecurity httpSecurity) {
-		FeiShuService feiShuService = httpSecurity.getSharedObject(FeiShuService.class);
-		if (feiShuService == null) {
-			feiShuService = OAuth2ConfigurerUtils.getOptionalBean(httpSecurity, FeiShuService.class);
-			if (feiShuService == null) {
-				FeiShuProperties feiShuProperties = OAuth2ConfigurerUtils.getOptionalBean(httpSecurity,
-						FeiShuProperties.class);
-				feiShuService = new InMemoryFeiShuService(feiShuProperties);
+	public static FeiShuWebPageService getFeiShuWebPageService(HttpSecurity httpSecurity) {
+		FeiShuWebPageService feiShuWebPageService = httpSecurity.getSharedObject(FeiShuWebPageService.class);
+		if (feiShuWebPageService == null) {
+			feiShuWebPageService = OAuth2ConfigurerUtils.getOptionalBean(httpSecurity, FeiShuWebPageService.class);
+			if (feiShuWebPageService == null) {
+				FeiShuWebPageProperties feiShuWebPageProperties = OAuth2ConfigurerUtils.getOptionalBean(httpSecurity,
+						FeiShuWebPageProperties.class);
+				feiShuWebPageService = new InMemoryFeiShuWebPageService(feiShuWebPageProperties);
 			}
 		}
-		return feiShuService;
+		return feiShuWebPageService;
 	}
 
 }

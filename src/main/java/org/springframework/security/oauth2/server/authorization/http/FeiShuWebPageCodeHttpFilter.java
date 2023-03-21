@@ -25,8 +25,8 @@ import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.core.endpoint.*;
-import org.springframework.security.oauth2.server.authorization.client.FeiShuService;
-import org.springframework.security.oauth2.server.authorization.properties.FeiShuProperties;
+import org.springframework.security.oauth2.server.authorization.client.FeiShuWebPageService;
+import org.springframework.security.oauth2.server.authorization.properties.FeiShuWebPageProperties;
 import org.springframework.stereotype.Component;
 import org.springframework.util.AntPathMatcher;
 
@@ -40,7 +40,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.springframework.security.oauth2.server.authorization.authentication.OAuth2FeiShuAuthenticationToken.FEISHU;
+import static org.springframework.security.oauth2.server.authorization.authentication.OAuth2FeiShuWebPageAuthenticationToken.FEISHU_WEBPAGE;
 
 /**
  * 飞书授权码接收服务
@@ -57,9 +57,9 @@ import static org.springframework.security.oauth2.server.authorization.authentic
 @Data
 @EqualsAndHashCode(callSuper = true)
 @Component
-public class FeiShuCodeHttpFilter extends HttpFilter {
+public class FeiShuWebPageCodeHttpFilter extends HttpFilter {
 
-	public static final String PREFIX_URL = "/feishu/code";
+	public static final String PREFIX_URL = "/feishu-webpage/code";
 
 	public static final String TOKEN_URL = "/oauth2/token?grant_type={grant_type}&appid={appid}&code={code}&state={state}&client_id={client_id}&client_secret={client_secret}&remote_address={remote_address}&session_id={session_id}";
 
@@ -68,18 +68,18 @@ public class FeiShuCodeHttpFilter extends HttpFilter {
 	 */
 	private String prefixUrl = PREFIX_URL;
 
-	private FeiShuProperties feiShuProperties;
+	private FeiShuWebPageProperties feiShuWebPageProperties;
 
-	private FeiShuService feiShuService;
+	private FeiShuWebPageService feiShuWebPageService;
 
 	@Autowired
-	public void setFeiShuProperties(FeiShuProperties feiShuProperties) {
-		this.feiShuProperties = feiShuProperties;
+	public void setFeiShuWebPageProperties(FeiShuWebPageProperties feiShuWebPageProperties) {
+		this.feiShuWebPageProperties = feiShuWebPageProperties;
 	}
 
 	@Autowired
-	public void setFeiShuService(FeiShuService feiShuService) {
-		this.feiShuService = feiShuService;
+	public void setFeiShuWebPageService(FeiShuWebPageService feiShuWebPageService) {
+		this.feiShuWebPageService = feiShuWebPageService;
 	}
 
 	@Override
@@ -95,9 +95,9 @@ public class FeiShuCodeHttpFilter extends HttpFilter {
 			String appid = requestUri.replace(prefixUrl + "/", "");
 			String code = request.getParameter(OAuth2ParameterNames.CODE);
 			String state = request.getParameter(OAuth2ParameterNames.STATE);
-			String grantType = FEISHU.getValue();
+			String grantType = FEISHU_WEBPAGE.getValue();
 
-			FeiShuProperties.FeiShu offiaccount = feiShuService.getFeiShuByAppid(appid);
+			FeiShuWebPageProperties.FeiShuWebPage offiaccount = feiShuWebPageService.getFeiShuWebPageByAppid(appid);
 			String clientId = offiaccount.getClientId();
 			String clientSecret = offiaccount.getClientSecret();
 			String tokenUrlPrefix = offiaccount.getTokenUrlPrefix();
@@ -108,22 +108,22 @@ public class FeiShuCodeHttpFilter extends HttpFilter {
 
 			Map<String, String> uriVariables = new HashMap<>(8);
 			uriVariables.put(OAuth2ParameterNames.GRANT_TYPE, grantType);
-			uriVariables.put(OAuth2FeiShuParameterNames.APPID, appid);
+			uriVariables.put(OAuth2FeiShuWebPageParameterNames.APPID, appid);
 			uriVariables.put(OAuth2ParameterNames.CODE, code);
 			uriVariables.put(OAuth2ParameterNames.STATE, state);
 			uriVariables.put(OAuth2ParameterNames.SCOPE, scope);
 			uriVariables.put(OAuth2ParameterNames.CLIENT_ID, clientId);
 			uriVariables.put(OAuth2ParameterNames.CLIENT_SECRET, clientSecret);
-			uriVariables.put(OAuth2FeiShuParameterNames.REMOTE_ADDRESS, remoteHost);
-			uriVariables.put(OAuth2FeiShuParameterNames.SESSION_ID, session == null ? "" : session.getId());
+			uriVariables.put(OAuth2FeiShuWebPageParameterNames.REMOTE_ADDRESS, remoteHost);
+			uriVariables.put(OAuth2FeiShuWebPageParameterNames.SESSION_ID, session == null ? "" : session.getId());
 
-			OAuth2AccessTokenResponse oauth2AccessTokenResponse = feiShuService.getOAuth2AccessTokenResponse(request,
-					response, tokenUrlPrefix, TOKEN_URL, uriVariables);
+			OAuth2AccessTokenResponse oauth2AccessTokenResponse = feiShuWebPageService
+				.getOAuth2AccessTokenResponse(request, response, tokenUrlPrefix, TOKEN_URL, uriVariables);
 			if (oauth2AccessTokenResponse == null) {
 				return;
 			}
 
-			feiShuService.sendRedirect(request, response, uriVariables, oauth2AccessTokenResponse, offiaccount);
+			feiShuWebPageService.sendRedirect(request, response, uriVariables, oauth2AccessTokenResponse, offiaccount);
 			return;
 		}
 

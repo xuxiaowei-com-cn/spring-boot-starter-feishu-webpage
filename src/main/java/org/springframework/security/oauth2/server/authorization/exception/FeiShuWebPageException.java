@@ -29,25 +29,25 @@ import org.springframework.security.oauth2.core.OAuth2Error;
  * @author xuxiaowei
  * @since 0.0.1
  */
-public class FeiShuException extends OAuth2AuthenticationException {
+public class FeiShuWebPageException extends OAuth2AuthenticationException {
 
-	public FeiShuException(String errorCode) {
+	public FeiShuWebPageException(String errorCode) {
 		super(errorCode);
 	}
 
-	public FeiShuException(OAuth2Error error) {
+	public FeiShuWebPageException(OAuth2Error error) {
 		super(error);
 	}
 
-	public FeiShuException(OAuth2Error error, Throwable cause) {
+	public FeiShuWebPageException(OAuth2Error error, Throwable cause) {
 		super(error, cause);
 	}
 
-	public FeiShuException(OAuth2Error error, String message) {
+	public FeiShuWebPageException(OAuth2Error error, String message) {
 		super(error, message);
 	}
 
-	public FeiShuException(OAuth2Error error, String message, Throwable cause) {
+	public FeiShuWebPageException(OAuth2Error error, String message, Throwable cause) {
 		super(error, message, cause);
 	}
 

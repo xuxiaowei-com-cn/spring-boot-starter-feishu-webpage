@@ -72,7 +72,7 @@ import java.util.Map;
  * @see JwtAuthenticationToken
  * @see PreAuthenticatedAuthenticationToken
  */
-public class FeiShuAuthenticationToken extends AbstractAuthenticationToken {
+public class FeiShuWebPageAuthenticationToken extends AbstractAuthenticationToken {
 
 	private static final long serialVersionUID = SpringSecurityCoreVersion.SERIAL_VERSION_UID;
 
@@ -139,9 +139,9 @@ public class FeiShuAuthenticationToken extends AbstractAuthenticationToken {
 	@Setter
 	private String unionid;
 
-	public FeiShuAuthenticationToken(Collection<? extends GrantedAuthority> authorities, Authentication clientPrincipal,
-			Authentication principal, UserDetails userDetails, Map<String, Object> additionalParameters, Object details,
-			String appid, String code, String openid) {
+	public FeiShuWebPageAuthenticationToken(Collection<? extends GrantedAuthority> authorities,
+			Authentication clientPrincipal, Authentication principal, UserDetails userDetails,
+			Map<String, Object> additionalParameters, Object details, String appid, String code, String openid) {
 		super(authorities);
 		Assert.notNull(authorities, "authorities 不能为空");
 		Assert.notNull(clientPrincipal, "clientPrincipal 不能为空");
@@ -149,7 +149,7 @@ public class FeiShuAuthenticationToken extends AbstractAuthenticationToken {
 		Assert.notNull(userDetails, "userDetails 不能为空");
 		Assert.notNull(appid, "appid 不能为空");
 		Assert.notNull(openid, "openid 不能为空");
-		this.authorizationGrantType = OAuth2FeiShuAuthenticationToken.FEISHU;
+		this.authorizationGrantType = OAuth2FeiShuWebPageAuthenticationToken.FEISHU_WEBPAGE;
 		this.clientPrincipal = clientPrincipal;
 		this.principal = principal;
 		this.userDetails = userDetails;

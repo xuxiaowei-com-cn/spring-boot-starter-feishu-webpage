@@ -1,4 +1,4 @@
-org.springframework.security.oauth2.server.authorization.config.annotation.web.configuration.OAuth2FeiShuConfiguration
-org.springframework.security.oauth2.server.authorization.http.FeiShuAuthorizeHttpFilter
-org.springframework.security.oauth2.server.authorization.http.FeiShuCodeHttpFilter
-org.springframework.security.oauth2.server.authorization.properties.FeiShuProperties
+org.springframework.security.oauth2.server.authorization.config.annotation.web.configuration.OAuth2FeiShuWebPageConfiguration
+org.springframework.security.oauth2.server.authorization.http.FeiShuWebPageAuthorizeHttpFilter
+org.springframework.security.oauth2.server.authorization.http.FeiShuWebPageCodeHttpFilter
+org.springframework.security.oauth2.server.authorization.properties.FeiShuWebPageProperties

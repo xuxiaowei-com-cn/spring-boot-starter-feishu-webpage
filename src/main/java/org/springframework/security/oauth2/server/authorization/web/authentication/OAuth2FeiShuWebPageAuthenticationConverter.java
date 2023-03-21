@@ -24,10 +24,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.core.OAuth2ErrorCodes;
 import org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames;
-import org.springframework.security.oauth2.core.endpoint.OAuth2FeiShuParameterNames;
+import org.springframework.security.oauth2.core.endpoint.OAuth2FeiShuWebPageParameterNames;
 import org.springframework.security.oauth2.server.authorization.authentication.OAuth2AuthorizationCodeAuthenticationToken;
 import org.springframework.security.oauth2.server.authorization.authentication.OAuth2ClientCredentialsAuthenticationToken;
-import org.springframework.security.oauth2.server.authorization.authentication.OAuth2FeiShuAuthenticationToken;
+import org.springframework.security.oauth2.server.authorization.authentication.OAuth2FeiShuWebPageAuthenticationToken;
 import org.springframework.security.web.authentication.AuthenticationConverter;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
@@ -37,7 +37,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 微信 OAuth2 用于验证授权授予的 {@link OAuth2FeiShuAuthenticationToken}。
+ * 微信 OAuth2 用于验证授权授予的 {@link OAuth2FeiShuWebPageAuthenticationToken}。
  *
  * @author xuxiaowei
  * @since Joe Grandja
@@ -51,14 +51,14 @@ import java.util.Map;
  * {@link OAuth2ClientCredentialsAuthenticationToken} 。
  */
 @SuppressWarnings("AlibabaClassNamingShouldBeCamel")
-public class OAuth2FeiShuAuthenticationConverter implements AuthenticationConverter {
+public class OAuth2FeiShuWebPageAuthenticationConverter implements AuthenticationConverter {
 
 	@Override
 	public Authentication convert(HttpServletRequest request) {
 
 		// grant_type (REQUIRED)
 		String grantType = request.getParameter(OAuth2ParameterNames.GRANT_TYPE);
-		if (!OAuth2FeiShuAuthenticationToken.FEISHU.getValue().equals(grantType)) {
+		if (!OAuth2FeiShuWebPageAuthenticationToken.FEISHU_WEBPAGE.getValue().equals(grantType)) {
 			return null;
 		}
 
@@ -70,15 +70,15 @@ public class OAuth2FeiShuAuthenticationConverter implements AuthenticationConver
 		String code = parameters.getFirst(OAuth2ParameterNames.CODE);
 		if (!StringUtils.hasText(code) || parameters.get(OAuth2ParameterNames.CODE).size() != 1) {
 			OAuth2EndpointUtils.throwError(OAuth2ErrorCodes.INVALID_REQUEST, OAuth2ParameterNames.CODE,
-					OAuth2FeiShuEndpointUtils.AUTH_CODE2SESSION_URI);
+					OAuth2FeiShuWebPageEndpointUtils.AUTH_CODE2SESSION_URI);
 		}
 
 		// appid (REQUIRED)
-		String appid = parameters.getFirst(OAuth2FeiShuParameterNames.APPID);
+		String appid = parameters.getFirst(OAuth2FeiShuWebPageParameterNames.APPID);
 
-		if (!StringUtils.hasText(appid) || parameters.get(OAuth2FeiShuParameterNames.APPID).size() != 1) {
-			OAuth2EndpointUtils.throwError(OAuth2ErrorCodes.INVALID_REQUEST, OAuth2FeiShuParameterNames.APPID,
-					OAuth2FeiShuEndpointUtils.AUTH_CODE2SESSION_URI);
+		if (!StringUtils.hasText(appid) || parameters.get(OAuth2FeiShuWebPageParameterNames.APPID).size() != 1) {
+			OAuth2EndpointUtils.throwError(OAuth2ErrorCodes.INVALID_REQUEST, OAuth2FeiShuWebPageParameterNames.APPID,
+					OAuth2FeiShuWebPageEndpointUtils.AUTH_CODE2SESSION_URI);
 		}
 
 		// scope
@@ -88,17 +88,18 @@ public class OAuth2FeiShuAuthenticationConverter implements AuthenticationConver
 		parameters.forEach((key, value) -> {
 			if (!key.equals(OAuth2ParameterNames.GRANT_TYPE) && !key.equals(OAuth2ParameterNames.CLIENT_ID)
 					&& !key.equals(OAuth2ParameterNames.CODE) && !key.equals(OAuth2ParameterNames.REDIRECT_URI)
-					&& !key.equals(OAuth2ParameterNames.CLIENT_SECRET) && !key.equals(OAuth2FeiShuParameterNames.APPID)
-					&& !key.equals(OAuth2ParameterNames.SCOPE) && !OAuth2FeiShuParameterNames.REMOTE_ADDRESS.equals(key)
-					&& !OAuth2FeiShuParameterNames.SESSION_ID.equals(key)) {
+					&& !key.equals(OAuth2ParameterNames.CLIENT_SECRET)
+					&& !key.equals(OAuth2FeiShuWebPageParameterNames.APPID) && !key.equals(OAuth2ParameterNames.SCOPE)
+					&& !OAuth2FeiShuWebPageParameterNames.REMOTE_ADDRESS.equals(key)
+					&& !OAuth2FeiShuWebPageParameterNames.SESSION_ID.equals(key)) {
 				additionalParameters.put(key, value.get(0));
 			}
 		});
 
-		String remoteAddress = request.getParameter(OAuth2FeiShuParameterNames.REMOTE_ADDRESS);
-		String sessionId = request.getParameter(OAuth2FeiShuParameterNames.SESSION_ID);
+		String remoteAddress = request.getParameter(OAuth2FeiShuWebPageParameterNames.REMOTE_ADDRESS);
+		String sessionId = request.getParameter(OAuth2FeiShuWebPageParameterNames.SESSION_ID);
 
-		return new OAuth2FeiShuAuthenticationToken(clientPrincipal, additionalParameters, appid, code, scope,
+		return new OAuth2FeiShuWebPageAuthenticationToken(clientPrincipal, additionalParameters, appid, code, scope,
 				remoteAddress, sessionId);
 	}
 

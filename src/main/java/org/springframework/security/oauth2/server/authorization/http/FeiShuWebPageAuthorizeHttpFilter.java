@@ -24,7 +24,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.oauth2.server.authorization.client.FeiShuService;
+import org.springframework.security.oauth2.server.authorization.client.FeiShuWebPageService;
 import org.springframework.stereotype.Component;
 import org.springframework.util.AntPathMatcher;
 
@@ -48,9 +48,9 @@ import java.util.UUID;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @Component
-public class FeiShuAuthorizeHttpFilter extends HttpFilter {
+public class FeiShuWebPageAuthorizeHttpFilter extends HttpFilter {
 
-	public static final String PREFIX_URL = "/feishu/authorize";
+	public static final String PREFIX_URL = "/feishu-webpage/authorize";
 
 	/**
 	 * @see <a href=
@@ -59,11 +59,11 @@ public class FeiShuAuthorizeHttpFilter extends HttpFilter {
 	public static final String AUTHORIZE_URL = "https://passport.feishu.cn/suite/passport/oauth/authorize"
 			+ "?client_id=%s&redirect_uri=%s&response_type=code&state=%s";
 
-	private FeiShuService feiShuService;
+	private FeiShuWebPageService feiShuWebPageService;
 
 	@Autowired
-	public void setFeiShuService(FeiShuService feiShuService) {
-		this.feiShuService = feiShuService;
+	public void setFeiShuWebPageService(FeiShuWebPageService feiShuWebPageService) {
+		this.feiShuWebPageService = feiShuWebPageService;
 	}
 
 	/**
@@ -83,7 +83,7 @@ public class FeiShuAuthorizeHttpFilter extends HttpFilter {
 
 			String appid = requestUri.replace(prefixUrl + "/", "");
 
-			String redirectUri = feiShuService.getRedirectUriByAppid(appid);
+			String redirectUri = feiShuWebPageService.getRedirectUriByAppid(appid);
 
 			String state = UUID.randomUUID().toString();
 			String url = String.format(AUTHORIZE_URL, appid, redirectUri, state);

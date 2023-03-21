@@ -29,7 +29,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.authentication.FeiShuAuthenticationToken;
+import org.springframework.security.authentication.FeiShuWebPageAuthenticationToken;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -40,15 +40,15 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.OAuth2Error;
 import org.springframework.security.oauth2.core.endpoint.OAuth2AccessTokenResponse;
 import org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames;
-import org.springframework.security.oauth2.core.endpoint.OAuth2FeiShuParameterNames;
+import org.springframework.security.oauth2.core.endpoint.OAuth2FeiShuWebPageParameterNames;
 import org.springframework.security.oauth2.core.http.converter.OAuth2AccessTokenResponseHttpMessageConverter;
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers.OAuth2AuthorizationServerConfigurer;
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers.OAuth2TokenEndpointConfigurer;
-import org.springframework.security.oauth2.server.authorization.exception.AppidFeiShuException;
-import org.springframework.security.oauth2.server.authorization.exception.RedirectUriFeiShuException;
-import org.springframework.security.oauth2.server.authorization.exception.RedirectFeiShuException;
-import org.springframework.security.oauth2.server.authorization.properties.FeiShuProperties;
-import org.springframework.security.oauth2.server.authorization.web.authentication.OAuth2FeiShuEndpointUtils;
+import org.springframework.security.oauth2.server.authorization.exception.AppidFeiShuWebPageException;
+import org.springframework.security.oauth2.server.authorization.exception.RedirectUriFeiShuWebPageException;
+import org.springframework.security.oauth2.server.authorization.exception.RedirectFeiShuWebPageException;
+import org.springframework.security.oauth2.server.authorization.properties.FeiShuWebPageProperties;
+import org.springframework.security.oauth2.server.authorization.web.authentication.OAuth2FeiShuWebPageEndpointUtils;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
@@ -70,12 +70,12 @@ import java.util.Map;
  * @author xuxiaowei
  * @since 0.0.1
  */
-public class InMemoryFeiShuService implements FeiShuService {
+public class InMemoryFeiShuWebPageService implements FeiShuWebPageService {
 
-	private final FeiShuProperties feiShuProperties;
+	private final FeiShuWebPageProperties feiShuWebPageProperties;
 
-	public InMemoryFeiShuService(FeiShuProperties feiShuProperties) {
-		this.feiShuProperties = feiShuProperties;
+	public InMemoryFeiShuWebPageService(FeiShuWebPageProperties feiShuWebPageProperties) {
+		this.feiShuWebPageProperties = feiShuWebPageProperties;
 	}
 
 	/**
@@ -111,15 +111,15 @@ public class InMemoryFeiShuService implements FeiShuService {
 			Object credentials, String unionid, String accessToken, String refreshToken, Integer expiresIn,
 			String scope) {
 		List<GrantedAuthority> authorities = new ArrayList<>();
-		SimpleGrantedAuthority authority = new SimpleGrantedAuthority(feiShuProperties.getDefaultRole());
+		SimpleGrantedAuthority authority = new SimpleGrantedAuthority(feiShuWebPageProperties.getDefaultRole());
 		authorities.add(authority);
 		User user = new User(openid, accessToken, authorities);
 
 		UsernamePasswordAuthenticationToken principal = UsernamePasswordAuthenticationToken.authenticated(user, null,
 				user.getAuthorities());
 
-		FeiShuAuthenticationToken authenticationToken = new FeiShuAuthenticationToken(authorities, clientPrincipal,
-				principal, user, additionalParameters, details, appid, code, openid);
+		FeiShuWebPageAuthenticationToken authenticationToken = new FeiShuWebPageAuthenticationToken(authorities,
+				clientPrincipal, principal, user, additionalParameters, details, appid, code, openid);
 
 		authenticationToken.setCredentials(credentials);
 		authenticationToken.setUnionid(unionid);
@@ -142,39 +142,39 @@ public class InMemoryFeiShuService implements FeiShuService {
 	 * 拦截处理此异常
 	 */
 	@Override
-	public FeiShuTokenResponse getAccessTokenResponse(String appid, String code, String accessTokenUrl) {
+	public FeiShuWebPageTokenResponse getAccessTokenResponse(String appid, String code, String accessTokenUrl) {
 		Map<String, String> uriVariables = new HashMap<>(8);
-		uriVariables.put(OAuth2FeiShuParameterNames.APPID, appid);
+		uriVariables.put(OAuth2FeiShuWebPageParameterNames.APPID, appid);
 
 		String secret = getSecretByAppid(appid);
 
-		uriVariables.put(OAuth2FeiShuParameterNames.SECRET, secret);
+		uriVariables.put(OAuth2FeiShuWebPageParameterNames.SECRET, secret);
 		uriVariables.put(OAuth2ParameterNames.CODE, code);
 
 		RestTemplate restTemplate = new RestTemplate();
 
 		String forObject = restTemplate.getForObject(accessTokenUrl, String.class, uriVariables);
 
-		FeiShuTokenResponse feiShuTokenResponse;
+		FeiShuWebPageTokenResponse feiShuWebPageTokenResponse;
 		ObjectMapper objectMapper = new ObjectMapper();
 		objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		try {
-			feiShuTokenResponse = objectMapper.readValue(forObject, FeiShuTokenResponse.class);
+			feiShuWebPageTokenResponse = objectMapper.readValue(forObject, FeiShuWebPageTokenResponse.class);
 		}
 		catch (JsonProcessingException e) {
-			OAuth2Error error = new OAuth2Error(OAuth2FeiShuEndpointUtils.ERROR_CODE,
-					"使用飞书授权code：" + code + " 获取Token异常", OAuth2FeiShuEndpointUtils.AUTH_CODE2SESSION_URI);
+			OAuth2Error error = new OAuth2Error(OAuth2FeiShuWebPageEndpointUtils.ERROR_CODE,
+					"使用飞书授权code：" + code + " 获取Token异常", OAuth2FeiShuWebPageEndpointUtils.AUTH_CODE2SESSION_URI);
 			throw new OAuth2AuthenticationException(error, e);
 		}
 
-		String openid = feiShuTokenResponse.getOpenid();
+		String openid = feiShuWebPageTokenResponse.getOpenid();
 		if (openid == null) {
-			OAuth2Error error = new OAuth2Error(feiShuTokenResponse.getErrcode(), feiShuTokenResponse.getErrmsg(),
-					OAuth2FeiShuEndpointUtils.AUTH_CODE2SESSION_URI);
+			OAuth2Error error = new OAuth2Error(feiShuWebPageTokenResponse.getErrcode(),
+					feiShuWebPageTokenResponse.getErrmsg(), OAuth2FeiShuWebPageEndpointUtils.AUTH_CODE2SESSION_URI);
 			throw new OAuth2AuthenticationException(error);
 		}
 
-		return feiShuTokenResponse;
+		return feiShuWebPageTokenResponse;
 	}
 
 	/**
@@ -183,7 +183,7 @@ public class InMemoryFeiShuService implements FeiShuService {
 	 * @param response 响应
 	 * @param uriVariables 参数
 	 * @param oauth2AccessTokenResponse OAuth2.1 授权 Token
-	 * @param feiShu 飞书配置
+	 * @param feiShuWebPage 飞书配置
 	 * @throws OAuth2AuthenticationException OAuth 2.1 可处理的异常，可使用
 	 * {@link OAuth2AuthorizationServerConfigurer#tokenEndpoint(Customizer)} 中的
 	 * {@link OAuth2TokenEndpointConfigurer#errorResponseHandler(AuthenticationFailureHandler)}
@@ -191,17 +191,17 @@ public class InMemoryFeiShuService implements FeiShuService {
 	 */
 	@Override
 	public void sendRedirect(HttpServletRequest request, HttpServletResponse response, Map<String, String> uriVariables,
-			OAuth2AccessTokenResponse oauth2AccessTokenResponse, FeiShuProperties.FeiShu feiShu) {
+			OAuth2AccessTokenResponse oauth2AccessTokenResponse, FeiShuWebPageProperties.FeiShuWebPage feiShuWebPage) {
 
 		OAuth2AccessToken accessToken = oauth2AccessTokenResponse.getAccessToken();
 
 		try {
-			response.sendRedirect(
-					feiShu.getSuccessUrl() + "?" + feiShu.getParameterName() + "=" + accessToken.getTokenValue());
+			response.sendRedirect(feiShuWebPage.getSuccessUrl() + "?" + feiShuWebPage.getParameterName() + "="
+					+ accessToken.getTokenValue());
 		}
 		catch (IOException e) {
-			OAuth2Error error = new OAuth2Error(OAuth2FeiShuEndpointUtils.ERROR_CODE, "飞书重定向异常", null);
-			throw new RedirectFeiShuException(error, e);
+			OAuth2Error error = new OAuth2Error(OAuth2FeiShuWebPageEndpointUtils.ERROR_CODE, "飞书重定向异常", null);
+			throw new RedirectFeiShuWebPageException(error, e);
 		}
 	}
 
@@ -215,20 +215,20 @@ public class InMemoryFeiShuService implements FeiShuService {
 	 * 拦截处理此异常
 	 */
 	@Override
-	public FeiShuProperties.FeiShu getFeiShuByAppid(String appid) {
-		List<FeiShuProperties.FeiShu> list = feiShuProperties.getList();
+	public FeiShuWebPageProperties.FeiShuWebPage getFeiShuWebPageByAppid(String appid) {
+		List<FeiShuWebPageProperties.FeiShuWebPage> list = feiShuWebPageProperties.getList();
 		if (list == null) {
-			OAuth2Error error = new OAuth2Error(OAuth2FeiShuEndpointUtils.ERROR_CODE, "appid 未配置", null);
-			throw new AppidFeiShuException(error);
+			OAuth2Error error = new OAuth2Error(OAuth2FeiShuWebPageEndpointUtils.ERROR_CODE, "appid 未配置", null);
+			throw new AppidFeiShuWebPageException(error);
 		}
 
-		for (FeiShuProperties.FeiShu feiShu : list) {
-			if (appid.equals(feiShu.getAppid())) {
-				return feiShu;
+		for (FeiShuWebPageProperties.FeiShuWebPage feiShuWebPage : list) {
+			if (appid.equals(feiShuWebPage.getAppid())) {
+				return feiShuWebPage;
 			}
 		}
-		OAuth2Error error = new OAuth2Error(OAuth2FeiShuEndpointUtils.ERROR_CODE, "未匹配到 appid", null);
-		throw new AppidFeiShuException(error);
+		OAuth2Error error = new OAuth2Error(OAuth2FeiShuWebPageEndpointUtils.ERROR_CODE, "未匹配到 appid", null);
+		throw new AppidFeiShuWebPageException(error);
 	}
 
 	/**
@@ -273,15 +273,15 @@ public class InMemoryFeiShuService implements FeiShuService {
 	 */
 	@Override
 	public String getRedirectUriByAppid(String appid) throws OAuth2AuthenticationException {
-		FeiShuProperties.FeiShu feiShu = getFeiShuByAppid(appid);
-		String redirectUriPrefix = feiShu.getRedirectUriPrefix();
+		FeiShuWebPageProperties.FeiShuWebPage feiShuWebPage = getFeiShuWebPageByAppid(appid);
+		String redirectUriPrefix = feiShuWebPage.getRedirectUriPrefix();
 
 		if (StringUtils.hasText(redirectUriPrefix)) {
 			return UriUtils.encode(redirectUriPrefix + "/" + appid, StandardCharsets.UTF_8);
 		}
 		else {
-			OAuth2Error error = new OAuth2Error(OAuth2FeiShuEndpointUtils.ERROR_CODE, "重定向地址前缀不能为空", null);
-			throw new RedirectUriFeiShuException(error);
+			OAuth2Error error = new OAuth2Error(OAuth2FeiShuWebPageEndpointUtils.ERROR_CODE, "重定向地址前缀不能为空", null);
+			throw new RedirectUriFeiShuWebPageException(error);
 		}
 	}
 
@@ -294,8 +294,8 @@ public class InMemoryFeiShuService implements FeiShuService {
 	 */
 	public String getSecretByAppid(String appid) {
 		Assert.notNull(appid, "appid 不能为 null");
-		FeiShuProperties.FeiShu feiShu = getFeiShuByAppid(appid);
-		return feiShu.getSecret();
+		FeiShuWebPageProperties.FeiShuWebPage feiShuWebPage = getFeiShuWebPageByAppid(appid);
+		return feiShuWebPage.getSecret();
 	}
 
 }

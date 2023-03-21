@@ -37,13 +37,13 @@ import java.util.List;
  */
 @Data
 @Component
-@ConfigurationProperties("feishu")
-public class FeiShuProperties {
+@ConfigurationProperties("feishu.webpage")
+public class FeiShuWebPageProperties {
 
 	/**
 	 * 飞书属性配置列表
 	 */
-	private List<FeiShu> list;
+	private List<FeiShuWebPage> list;
 
 	/**
 	 * 默认飞书的权限
@@ -76,7 +76,7 @@ public class FeiShuProperties {
 	 * @since 0.0.1
 	 */
 	@Data
-	public static class FeiShu {
+	public static class FeiShuWebPage {
 
 		/**
 		 * AppID

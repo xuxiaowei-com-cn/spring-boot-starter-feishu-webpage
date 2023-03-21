@@ -28,7 +28,7 @@ import org.springframework.security.oauth2.core.endpoint.OAuth2AccessTokenRespon
 import org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames;
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers.OAuth2AuthorizationServerConfigurer;
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers.OAuth2TokenEndpointConfigurer;
-import org.springframework.security.oauth2.server.authorization.properties.FeiShuProperties;
+import org.springframework.security.oauth2.server.authorization.properties.FeiShuWebPageProperties;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 
 import javax.servlet.http.HttpServletRequest;
@@ -44,7 +44,7 @@ import java.util.Map;
  * @see InMemoryRegisteredClientRepository
  * @see JdbcRegisteredClientRepository
  */
-public interface FeiShuService {
+public interface FeiShuWebPageService {
 
 	/**
 	 * 认证信息
@@ -92,7 +92,7 @@ public interface FeiShuService {
 	 * {@link OAuth2TokenEndpointConfigurer#errorResponseHandler(AuthenticationFailureHandler)}
 	 * 拦截处理此异常
 	 */
-	FeiShuTokenResponse getAccessTokenResponse(String appid, String code, String accessTokenUrl)
+	FeiShuWebPageTokenResponse getAccessTokenResponse(String appid, String code, String accessTokenUrl)
 			throws OAuth2AuthenticationException;
 
 	/**
@@ -101,14 +101,14 @@ public interface FeiShuService {
 	 * @param response 响应
 	 * @param uriVariables 参数
 	 * @param oauth2AccessTokenResponse OAuth2.1 授权 Token
-	 * @param feiShu 飞书配置
+	 * @param feiShuWebPage 飞书配置
 	 * @throws OAuth2AuthenticationException OAuth 2.1 可处理的异常，可使用
 	 * {@link OAuth2AuthorizationServerConfigurer#tokenEndpoint(Customizer)} 中的
 	 * {@link OAuth2TokenEndpointConfigurer#errorResponseHandler(AuthenticationFailureHandler)}
 	 * 拦截处理此异常
 	 */
 	void sendRedirect(HttpServletRequest request, HttpServletResponse response, Map<String, String> uriVariables,
-			OAuth2AccessTokenResponse oauth2AccessTokenResponse, FeiShuProperties.FeiShu feiShu)
+			OAuth2AccessTokenResponse oauth2AccessTokenResponse, FeiShuWebPageProperties.FeiShuWebPage feiShuWebPage)
 			throws OAuth2AuthenticationException;
 
 	/**
@@ -120,7 +120,7 @@ public interface FeiShuService {
 	 * {@link OAuth2TokenEndpointConfigurer#errorResponseHandler(AuthenticationFailureHandler)}
 	 * 拦截处理此异常
 	 */
-	FeiShuProperties.FeiShu getFeiShuByAppid(String appid) throws OAuth2AuthenticationException;
+	FeiShuWebPageProperties.FeiShuWebPage getFeiShuWebPageByAppid(String appid) throws OAuth2AuthenticationException;
 
 	/**
 	 * 获取 OAuth 2.1 授权 Token（如果不想执行此方法后面的内容，可返回 null）
