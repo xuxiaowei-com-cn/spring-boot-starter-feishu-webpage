@@ -37,7 +37,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 微信 OAuth2 用于验证授权授予的 {@link OAuth2FeiShuWebPageAuthenticationToken}。
+ * 飞书 OAuth2 用于验证授权授予的 {@link OAuth2FeiShuWebPageAuthenticationToken}。
  *
  * @author xuxiaowei
  * @since Joe Grandja
