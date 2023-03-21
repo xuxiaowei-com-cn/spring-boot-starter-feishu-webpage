@@ -31,6 +31,6 @@ next:
     - mvn clean -U package source:jar javadoc:jar deploy -Pgpg -DskipTests && echo 发布完成
   artifacts:
     paths:
-      - target/spring-boot-starter-feishu-*
+      - target/spring-boot-starter-feishu-webpage-*
   rules:
     - if: $CI_COMMIT_TAG

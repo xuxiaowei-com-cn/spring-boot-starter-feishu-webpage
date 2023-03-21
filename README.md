@@ -1,6 +1,6 @@
 <div align="center" style="text-align: center;">
-    <h1>spring-boot-starter-feishu</h1>
-    <h3>支持 OAuth 2.1 JWT 授权的飞书平台开发组件</h3>
+    <h1>spring-boot-starter-feishu-webpage</h1>
+    <h3>支持 OAuth 2.1 JWT 授权的飞书平台开发组件网页应用</h3>
     <a target="_blank" href="https://github.com/996icu/996.ICU/blob/master/LICENSE">
         <img alt="License-Anti" src="https://img.shields.io/badge/License-Anti 996-blue.svg">
     </a>
@@ -56,59 +56,59 @@
     <img alt="IntelliJ IDEA" src="https://img.shields.io/static/v1?logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAAAAAByaaZbAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAAmJLR0QA/4ePzL8AAAAHdElNRQfmBRkBICRBfW8eAAABPklEQVRIx+2UTStEYRiGr/kqZWaKMoyQUsoCWdn4AZKPlZSF5fgPVhYWStlZqPkB7GynWSg/QCmhUFOUGCPNZBrlnNtijmneOYZzykrn2p2e536f577P2wsBPvmQlACQg13Mr4b9CCTpuMunQIdGT8gQRCBZAQRPu0B6aRjsvqKXCRcAJO8lTTf3/GQJKF8Bz5481CfMvEnnxtrRduKhPET7R6GWka+UrBW//8Hej3haqZQFYgNz8VDmYbNNT8iSFDdMM1iSyh3uWHsAesNgVc1D7k4hMeISrN0uAOtAwTYF6Smg2UQUYDYbO8qdjS0Cua9CahsgPd8NleuW3WOFRiTV+nTj8mnL5XbixinVlnEJ7L1vkuzcuJT0ejDufL98UTjZmWyJsqFJvT9aBAT8J5zrrXYFF788xn8gCPDCJ2cr3I1zqSjOAAAAJXRFWHRkYXRlOmNyZWF0ZQAyMDIyLTA1LTI1VDAxOjMyOjM2KzAwOjAwH/0yeQAAACV0RVh0ZGF0ZTptb2RpZnkAMjAyMi0wNS0yNVQwMTozMjozNiswMDowMG6gisUAAAAASUVORK5CYII=&message=IntelliJ IDEA">
   </a>
 
-  <a target="_blank" href="https://s01.oss.sonatype.org/content/repositories/snapshots/cn/com/xuxiaowei/boot/next/spring-boot-starter-feishu">
-    <img alt="snapshots" src="https://img.shields.io/maven-metadata/v?label=snapshots&metadataUrl=https://s01.oss.sonatype.org/content/repositories/snapshots/cn/com/xuxiaowei/boot/next/spring-boot-starter-feishu/maven-metadata.xml">
+  <a target="_blank" href="https://s01.oss.sonatype.org/content/repositories/snapshots/cn/com/xuxiaowei/boot/next/spring-boot-starter-feishu-webpage">
+    <img alt="snapshots" src="https://img.shields.io/maven-metadata/v?label=snapshots&metadataUrl=https://s01.oss.sonatype.org/content/repositories/snapshots/cn/com/xuxiaowei/boot/next/spring-boot-starter-feishu-webpage/maven-metadata.xml">
   </a>
 
-  <a target="_blank" href="https://s01.oss.sonatype.org/content/repositories/releases/cn/com/xuxiaowei/boot/next/spring-boot-starter-feishu">
-    <img alt="releases" src="https://img.shields.io/maven-metadata/v?label=releases&color=blue&metadataUrl=https://s01.oss.sonatype.org/content/repositories/releases/cn/com/xuxiaowei/boot/next/spring-boot-starter-feishu/maven-metadata.xml">
+  <a target="_blank" href="https://s01.oss.sonatype.org/content/repositories/releases/cn/com/xuxiaowei/boot/next/spring-boot-starter-feishu-webpage">
+    <img alt="releases" src="https://img.shields.io/maven-metadata/v?label=releases&color=blue&metadataUrl=https://s01.oss.sonatype.org/content/repositories/releases/cn/com/xuxiaowei/boot/next/spring-boot-starter-feishu-webpage/maven-metadata.xml">
   </a>
 
-  <a target="_blank" href="https://github.com/xuxiaowei-com-cn/spring-boot-starter-feishu">
-    <img alt="GitHub stars" src="https://img.shields.io/github/stars/xuxiaowei-com-cn/spring-boot-starter-feishu?logo=github">
+  <a target="_blank" href="https://github.com/xuxiaowei-com-cn/spring-boot-starter-feishu-webpage">
+    <img alt="GitHub stars" src="https://img.shields.io/github/stars/xuxiaowei-com-cn/spring-boot-starter-feishu-webpage?logo=github">
   </a>
 
-  <a target="_blank" href="https://github.com/xuxiaowei-com-cn/spring-boot-starter-feishu">
-    <img alt="GitHub forks" src="https://img.shields.io/github/forks/xuxiaowei-com-cn/spring-boot-starter-feishu?logo=github">
+  <a target="_blank" href="https://github.com/xuxiaowei-com-cn/spring-boot-starter-feishu-webpage">
+    <img alt="GitHub forks" src="https://img.shields.io/github/forks/xuxiaowei-com-cn/spring-boot-starter-feishu-webpage?logo=github">
   </a>
 
-  <a target="_blank" href="https://github.com/xuxiaowei-com-cn/spring-boot-starter-feishu">
-    <img alt="GitHub watchers" src="https://img.shields.io/github/watchers/xuxiaowei-com-cn/spring-boot-starter-feishu?logo=github">
+  <a target="_blank" href="https://github.com/xuxiaowei-com-cn/spring-boot-starter-feishu-webpage">
+    <img alt="GitHub watchers" src="https://img.shields.io/github/watchers/xuxiaowei-com-cn/spring-boot-starter-feishu-webpage?logo=github">
   </a>
 
-  <a target="_blank" href="https://github.com/xuxiaowei-com-cn/spring-boot-starter-feishu">
-    <img alt="GitHub last commit" src="https://img.shields.io/github/last-commit/xuxiaowei-com-cn/spring-boot-starter-feishu">
+  <a target="_blank" href="https://github.com/xuxiaowei-com-cn/spring-boot-starter-feishu-webpage">
+    <img alt="GitHub last commit" src="https://img.shields.io/github/last-commit/xuxiaowei-com-cn/spring-boot-starter-feishu-webpage">
   </a>
 
-  <a target="_blank" href="https://gitee.com/xuxiaowei-com-cn/spring-boot-starter-feishu">
-    <img alt="码云Gitee stars" src="https://gitee.com/xuxiaowei-com-cn/spring-boot-starter-feishu/badge/star.svg?theme=blue">
+  <a target="_blank" href="https://gitee.com/xuxiaowei-com-cn/spring-boot-starter-feishu-webpage">
+    <img alt="码云Gitee stars" src="https://gitee.com/xuxiaowei-com-cn/spring-boot-starter-feishu-webpage/badge/star.svg?theme=blue">
   </a>
 
-  <a target="_blank" href="https://gitee.com/xuxiaowei-com-cn/spring-boot-starter-feishu">
-    <img alt="码云Gitee forks" src="https://gitee.com/xuxiaowei-com-cn/spring-boot-starter-feishu/badge/fork.svg?theme=blue">
+  <a target="_blank" href="https://gitee.com/xuxiaowei-com-cn/spring-boot-starter-feishu-webpage">
+    <img alt="码云Gitee forks" src="https://gitee.com/xuxiaowei-com-cn/spring-boot-starter-feishu-webpage/badge/fork.svg?theme=blue">
   </a>
 
-  <a target="_blank" href="https://gitlab.com/xuxiaowei-com-cn/spring-boot-starter-feishu">
-    <img alt="Gitlab stars" src="https://badgen.net/gitlab/stars/xuxiaowei-com-cn/spring-boot-starter-feishu?icon=gitlab">
+  <a target="_blank" href="https://gitlab.com/xuxiaowei-com-cn/spring-boot-starter-feishu-webpage">
+    <img alt="Gitlab stars" src="https://badgen.net/gitlab/stars/xuxiaowei-com-cn/spring-boot-starter-feishu-webpage?icon=gitlab">
   </a>
 
-  <a target="_blank" href="https://gitlab.com/xuxiaowei-com-cn/spring-boot-starter-feishu">
-    <img alt="Gitlab forks" src="https://badgen.net/gitlab/forks/xuxiaowei-com-cn/spring-boot-starter-feishu?icon=gitlab">
+  <a target="_blank" href="https://gitlab.com/xuxiaowei-com-cn/spring-boot-starter-feishu-webpage">
+    <img alt="Gitlab forks" src="https://badgen.net/gitlab/forks/xuxiaowei-com-cn/spring-boot-starter-feishu-webpage?icon=gitlab">
   </a>
 
-  <a target="_blank" href="https://gitlab.com/xuxiaowei-com-cn/spring-boot-starter-feishu">
-    <img alt="OSCS Status" src="https://www.oscs1024.com/platform/badge/xuxiaowei-com-cn/spring-boot-starter-feishu.svg?size=small">
+  <a target="_blank" href="https://gitlab.com/xuxiaowei-com-cn/spring-boot-starter-feishu-webpage">
+    <img alt="OSCS Status" src="https://www.oscs1024.com/platform/badge/xuxiaowei-com-cn/spring-boot-starter-feishu-webpage.svg?size=small">
   </a>
 
-  <a target="_blank" href="https://github.com/xuxiaowei-com-cn/spring-boot-starter-feishu">
-    <img alt="total lines" src="https://tokei.rs/b1/github/xuxiaowei-com-cn/spring-boot-starter-feishu">
+  <a target="_blank" href="https://github.com/xuxiaowei-com-cn/spring-boot-starter-feishu-webpage">
+    <img alt="total lines" src="https://tokei.rs/b1/github/xuxiaowei-com-cn/spring-boot-starter-feishu-webpage">
   </a>
 
-  <a target="_blank" href="https://github.com/xuxiaowei-com-cn/spring-boot-starter-feishu/blob/next/pom.xml">
+  <a target="_blank" href="https://github.com/xuxiaowei-com-cn/spring-boot-starter-feishu-webpage/blob/next/pom.xml">
     <img alt="Spring Boot" src="https://img.shields.io/static/v1?logo=Spring Boot&message=3.0.0">
   </a>
 
-  <a target="_blank" href="https://github.com/xuxiaowei-com-cn/spring-boot-starter-feishu/blob/next/pom.xml">
+  <a target="_blank" href="https://github.com/xuxiaowei-com-cn/spring-boot-starter-feishu-webpage/blob/next/pom.xml">
     <img alt="OAuth 2.1" src="https://img.shields.io/static/v1?label=OAuth 2.1&message=1.0.1&color=blue">
   </a>
 
@@ -134,11 +134,11 @@
 
 ## 发布
 
-- 由于流水线时间等问题，快照版发布流水线在[gitcode](https://gitcode.net/xuxiaowei-com-cn/spring-boot-starter-feishu)
-  ，正式版发布流水线在[gitlab](https://gitlab.com/xuxiaowei-com-cn/spring-boot-starter-feishu)
+- 由于流水线时间等问题，快照版发布流水线在[gitcode](https://gitcode.net/xuxiaowei-com-cn/spring-boot-starter-feishu-webpage)
+  ，正式版发布流水线在[gitlab](https://gitlab.com/xuxiaowei-com-cn/spring-boot-starter-feishu-webpage)
 
-- [快照版](https://s01.oss.sonatype.org/content/repositories/snapshots/cn/com/xuxiaowei/boot/next/spring-boot-starter-feishu)
-- [发布版](https://s01.oss.sonatype.org/content/repositories/releases/cn/com/xuxiaowei/boot/next/spring-boot-starter-feishu)
+- [快照版](https://s01.oss.sonatype.org/content/repositories/snapshots/cn/com/xuxiaowei/boot/next/spring-boot-starter-feishu-webpage)
+- [发布版](https://s01.oss.sonatype.org/content/repositories/releases/cn/com/xuxiaowei/boot/next/spring-boot-starter-feishu-webpage)
 
 ## [更新日志](CHANGELOG.md)
 
@@ -163,17 +163,17 @@
 
 <details>
 <summary>点击展开</summary>
-git remote add gitee https://gitee.com/xuxiaowei-com-cn/spring-boot-starter-feishu.git
+git remote add gitee https://gitee.com/xuxiaowei-com-cn/spring-boot-starter-feishu-webpage.git
 
-git remote add gitlab https://gitlab.com/xuxiaowei-com-cn/spring-boot-starter-feishu.git
+git remote add gitlab https://gitlab.com/xuxiaowei-com-cn/spring-boot-starter-feishu-webpage.git
 
-git remote add jihulab https://jihulab.com/xuxiaowei-com-cn/spring-boot-starter-feishu.git
+git remote add jihulab https://jihulab.com/xuxiaowei-com-cn/spring-boot-starter-feishu-webpage.git
 
-git remote add github https://github.com/xuxiaowei-com-cn/spring-boot-starter-feishu.git
+git remote add github https://github.com/xuxiaowei-com-cn/spring-boot-starter-feishu-webpage.git
 
-git remote add gitcode https://gitcode.net/xuxiaowei-com-cn/spring-boot-starter-feishu.git
+git remote add gitcode https://gitcode.net/xuxiaowei-com-cn/spring-boot-starter-feishu-webpage.git
 
-git remote add gitlink https://gitlink.org.cn/xuxiaowei-com-cn/spring-boot-starter-feishu.git
+git remote add gitlink https://gitlink.org.cn/xuxiaowei-com-cn/spring-boot-starter-feishu-webpage.git
 </details>
 
 ## 参考文档
@@ -190,4 +190,4 @@ git remote add gitlink https://gitlink.org.cn/xuxiaowei-com-cn/spring-boot-start
 
 ## Stargazers over time
 
-[![Stargazers over time](https://starchart.cc/xuxiaowei-com-cn/spring-boot-starter-feishu.svg)](https://starchart.cc/xuxiaowei-com-cn/spring-boot-starter-feishu)
+[![Stargazers over time](https://starchart.cc/xuxiaowei-com-cn/spring-boot-starter-feishu-webpage.svg)](https://starchart.cc/xuxiaowei-com-cn/spring-boot-starter-feishu-webpage)

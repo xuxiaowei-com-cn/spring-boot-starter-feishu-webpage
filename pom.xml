@@ -9,12 +9,12 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>cn.com.xuxiaowei.boot.next</groupId>
-    <artifactId>spring-boot-starter-feishu</artifactId>
+    <artifactId>spring-boot-starter-feishu-webpage</artifactId>
     <version>0.1.0-SNAPSHOT</version>
 
-    <name>spring-boot-starter-feishu</name>
-    <description>支持 OAuth 2.1 JWT 授权的飞书平台开发组件</description>
-    <url>https://github.com/xuxiaowei-com-cn/spring-boot-starter-feishu</url>
+    <name>spring-boot-starter-feishu-webpage</name>
+    <description>支持 OAuth 2.1 JWT 授权的飞书平台开发组件网页应用</description>
+    <url>https://github.com/xuxiaowei-com-cn/spring-boot-starter-feishu-webpage</url>
     <inceptionYear>2022</inceptionYear>
 
     <properties>
@@ -121,15 +121,15 @@
     </licenses>
 
     <scm>
-        <url>https://github.com/xuxiaowei-com-cn/spring-boot-starter-feishu</url>
-        <connection>scm:git:https://git@github.com/xuxiaowei-com-cn/spring-boot-starter-feishu.git
+        <url>https://github.com/xuxiaowei-com-cn/spring-boot-starter-feishu-webpage</url>
+        <connection>scm:git:https://git@github.com/xuxiaowei-com-cn/spring-boot-starter-feishu-webpage.git
         </connection>
 
     </scm>
 
     <issueManagement>
         <system>Github</system>
-        <url>https://github.com/xuxiaowei-com-cn/spring-boot-starter-feishu/issues</url>
+        <url>https://github.com/xuxiaowei-com-cn/spring-boot-starter-feishu-webpage/issues</url>
     </issueManagement>
 
     <organization>
