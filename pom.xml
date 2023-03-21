@@ -27,8 +27,6 @@
 
         <!-- https://mvnrepository.com/artifact/com.google.guava/guava -->
         <guava.version>31.1-jre</guava.version>
-        <!-- https://mvnrepository.com/artifact/com.aliyun/dingtalk -->
-        <dingtalk.version>1.5.31</dingtalk.version>
 
         <!-- OAuth 2.1 依赖 -->
         <!-- https://mvnrepository.com/artifact/org.springframework.security/spring-security-oauth2-authorization-server -->
@@ -68,13 +66,6 @@
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
             <version>${guava.version}</version>
-        </dependency>
-
-        <!-- https://mvnrepository.com/artifact/com.aliyun/dingtalk -->
-        <dependency>
-            <groupId>com.aliyun</groupId>
-            <artifactId>dingtalk</artifactId>
-            <version>${dingtalk.version}</version>
         </dependency>
 
         <!-- OAuth 2.1 依赖，支持 spring-boot 3.0.0 -->
