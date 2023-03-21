@@ -78,7 +78,7 @@ public class OAuth2FeiShuWebPageAuthenticationProvider implements Authentication
 	 * @see <a href=
 	 * "https://open.feishu.cn/document/common-capabilities/sso/web-application-sso/web-app-overview">登录流程</a>
 	 */
-	public static final String ACCESS_TOKEN_URL = "https://passport.feishu.cn/suite/passport/oauth/token?client_id={client_id}&client_secret={client_secret}&code={code}&grant_type=authorization_code";
+	public static final String ACCESS_TOKEN_URL = "https://passport.feishu.cn/suite/passport/oauth/token?client_id={client_id}&client_secret={client_secret}&code={code}&grant_type=authorization_code&redirect_uri={redirect_uri}";
 
 	private final HttpSecurity builder;
 

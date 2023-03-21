@@ -144,16 +144,21 @@ public class InMemoryFeiShuWebPageService implements FeiShuWebPageService {
 	@Override
 	public FeiShuWebPageTokenResponse getAccessTokenResponse(String appid, String code, String accessTokenUrl) {
 		Map<String, String> uriVariables = new HashMap<>(8);
-		uriVariables.put(OAuth2FeiShuWebPageParameterNames.APPID, appid);
 
 		String secret = getSecretByAppid(appid);
+		String redirectUri = getRedirectUriByAppid(appid);
 
-		uriVariables.put(OAuth2FeiShuWebPageParameterNames.SECRET, secret);
+		uriVariables.put(OAuth2ParameterNames.CLIENT_ID, appid);
+		uriVariables.put(OAuth2ParameterNames.CLIENT_SECRET, secret);
 		uriVariables.put(OAuth2ParameterNames.CODE, code);
+		uriVariables.put(OAuth2ParameterNames.REDIRECT_URI, redirectUri);
 
 		RestTemplate restTemplate = new RestTemplate();
+		HttpHeaders httpHeaders = new HttpHeaders();
+		httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+		HttpEntity<?> httpEntity = new HttpEntity<>(httpHeaders);
 
-		String forObject = restTemplate.getForObject(accessTokenUrl, String.class, uriVariables);
+		String forObject = restTemplate.postForObject(accessTokenUrl, httpEntity, String.class, uriVariables);
 
 		FeiShuWebPageTokenResponse feiShuWebPageTokenResponse;
 		ObjectMapper objectMapper = new ObjectMapper();
