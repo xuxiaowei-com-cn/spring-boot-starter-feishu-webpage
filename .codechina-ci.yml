@@ -11,7 +11,7 @@ main:
     paths:
       - .m2/repository
   script:
-    - GPG_FILE=/builds/xuxiaowei-com-cn/spring-boot-starter-feishu.tmp/xuxiaowei_0x97A36125_SECRET
+    - GPG_FILE=/builds/xuxiaowei-com-cn/spring-boot-starter-feishu-webpage.tmp/xuxiaowei_0x97A36125_SECRET
     - echo $GPG_FILE
     - gpg --import $GPG_FILE
     - SETTINGS_FILE=/usr/share/maven/conf/settings.xml
@@ -32,7 +32,7 @@ main:
     - mvn clean -e -U package source:jar javadoc:jar deploy -Pgpg -DskipTests -s settings.xml && echo 发布完成
   artifacts:
     paths:
-      - target/spring-boot-starter-feishu-*
+      - target/spring-boot-starter-feishu-webpage-*
   rules:
     # 仅用于发布非标签版本（一般为快照版）
     - if: $CI_COMMIT_TAG == null
