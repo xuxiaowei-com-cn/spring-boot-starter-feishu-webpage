@@ -9,9 +9,9 @@ package org.springframework.security.oauth2.server.authorization.client;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -25,7 +25,6 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.endpoint.OAuth2AccessTokenResponse;
-import org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames;
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers.OAuth2AuthorizationServerConfigurer;
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers.OAuth2TokenEndpointConfigurer;
 import org.springframework.security.oauth2.server.authorization.properties.FeiShuWebPageProperties;
@@ -65,8 +64,6 @@ public interface FeiShuWebPageService {
 	 * "https://open.feishu.cn/document/common-capabilities/sso/web-application-sso/web-app-overview">登录流程</a>
 	 * @param expiresIn 过期时间，<a href=
 	 * "https://open.feishu.cn/document/common-capabilities/sso/web-application-sso/web-app-overview">登录流程</a>
-	 * @param scope {@link OAuth2ParameterNames#SCOPE}，授权范围，<a href=
-	 * "https://open.feishu.cn/document/common-capabilities/sso/web-application-sso/web-app-overview">登录流程</a>
 	 * @return 返回 认证信息
 	 * @throws OAuth2AuthenticationException OAuth 2.1 可处理的异常，可使用
 	 * {@link OAuth2AuthorizationServerConfigurer#tokenEndpoint(Customizer)} 中的
@@ -75,8 +72,8 @@ public interface FeiShuWebPageService {
 	 */
 	AbstractAuthenticationToken authenticationToken(Authentication clientPrincipal,
 			Map<String, Object> additionalParameters, Object details, String appid, String code, String openid,
-			Object credentials, String unionid, String accessToken, String refreshToken, Integer expiresIn,
-			String scope) throws OAuth2AuthenticationException;
+			Object credentials, String unionid, String accessToken, String refreshToken, Integer expiresIn)
+			throws OAuth2AuthenticationException;
 
 	/**
 	 * 根据 AppID、code、jsCode2SessionUrl 获取Token
@@ -94,6 +91,22 @@ public interface FeiShuWebPageService {
 	 */
 	FeiShuWebPageTokenResponse getAccessTokenResponse(String appid, String code, String accessTokenUrl)
 			throws OAuth2AuthenticationException;
+
+	/**
+	 * 获取授权用户的资料
+	 * @param userinfoUrl 用户信息接口
+	 * @param appid AppID(飞书Gitee client_id)
+	 * @param state 状态码
+	 * @param binding 是否绑定，需要使用者自己去拓展
+	 * @param remoteAddress 用户IP
+	 * @param sessionId SessionID
+	 * @param feiShuWebPageTokenResponse 飞书 Token
+	 * @see <a href=
+	 * "https://open.feishu.cn/document/common-capabilities/sso/api/get-user-info">获取用户信息</a>
+	 * @return 返回授权用户的资料
+	 */
+	FeiShuWebPageUserinfoResponse getUserInfo(String userinfoUrl, String appid, String state, String binding,
+			String remoteAddress, String sessionId, FeiShuWebPageTokenResponse feiShuWebPageTokenResponse);
 
 	/**
 	 * 授权成功重定向方法

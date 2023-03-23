@@ -76,6 +76,12 @@ public class OAuth2FeiShuWebPageAuthenticationToken extends OAuth2AuthorizationG
 	@Getter
 	private final String sessionId;
 
+	@Getter
+	private final String state;
+
+	@Getter
+	private final String binding;
+
 	/**
 	 * 子类构造函数。
 	 * @param clientPrincipal 经过身份验证的客户端主体
@@ -88,7 +94,7 @@ public class OAuth2FeiShuWebPageAuthenticationToken extends OAuth2AuthorizationG
 	 */
 	public OAuth2FeiShuWebPageAuthenticationToken(Authentication clientPrincipal,
 			Map<String, Object> additionalParameters, String appid, String code, String scope, String remoteAddress,
-			String sessionId) {
+			String sessionId, String state, String binding) {
 		super(OAuth2FeiShuWebPageAuthenticationToken.FEISHU_WEBPAGE, clientPrincipal, additionalParameters);
 		Assert.hasText(appid, "appid 不能为空");
 		Assert.hasText(code, "code 不能为空");
@@ -97,6 +103,8 @@ public class OAuth2FeiShuWebPageAuthenticationToken extends OAuth2AuthorizationG
 		this.scope = scope;
 		this.remoteAddress = remoteAddress;
 		this.sessionId = sessionId;
+		this.state = state;
+		this.binding = binding;
 	}
 
 }

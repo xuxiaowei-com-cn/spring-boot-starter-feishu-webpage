@@ -32,9 +32,10 @@ import org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames;
 import org.springframework.security.oauth2.server.authorization.OAuth2Authorization;
 import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationService;
 import org.springframework.security.oauth2.server.authorization.OAuth2TokenType;
-import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
 import org.springframework.security.oauth2.server.authorization.client.FeiShuWebPageService;
 import org.springframework.security.oauth2.server.authorization.client.FeiShuWebPageTokenResponse;
+import org.springframework.security.oauth2.server.authorization.client.FeiShuWebPageUserinfoResponse;
+import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers.OAuth2FeiShuWebPageConfigurerUtils;
 import org.springframework.security.oauth2.server.authorization.context.AuthorizationServerContextHolder;
 import org.springframework.security.oauth2.server.authorization.oidc.authentication.OidcUserInfoAuthenticationProvider;
@@ -78,7 +79,13 @@ public class OAuth2FeiShuWebPageAuthenticationProvider implements Authentication
 	 * @see <a href=
 	 * "https://open.feishu.cn/document/common-capabilities/sso/web-application-sso/web-app-overview">登录流程</a>
 	 */
-	public static final String ACCESS_TOKEN_URL = "https://passport.feishu.cn/suite/passport/oauth/token?client_id={client_id}&client_secret={client_secret}&code={code}&grant_type=authorization_code&redirect_uri={redirect_uri}";
+	public static final String ACCESS_TOKEN_URL = "https://passport.feishu.cn/suite/passport/oauth/token";
+
+	/**
+	 * <a href=
+	 * "https://open.feishu.cn/document/common-capabilities/sso/api/get-user-info">获取用户信息</a>
+	 */
+	public static final String USERINFO_URL = "https://passport.feishu.cn/suite/passport/oauth/userinfo";
 
 	private final HttpSecurity builder;
 
@@ -107,6 +114,9 @@ public class OAuth2FeiShuWebPageAuthenticationProvider implements Authentication
 
 		String appid = grantAuthenticationToken.getAppid();
 		String code = grantAuthenticationToken.getCode();
+		String state = grantAuthenticationToken.getState();
+		String binding = grantAuthenticationToken.getBinding();
+
 		Map<String, Object> additionalParameters = grantAuthenticationToken.getAdditionalParameters();
 		Set<String> requestedScopes = StringUtils.commaDelimitedListToSet(grantAuthenticationToken.getScope());
 
@@ -141,21 +151,23 @@ public class OAuth2FeiShuWebPageAuthenticationProvider implements Authentication
 		FeiShuWebPageTokenResponse feiShuWebPageTokenResponse = feiShuWebPageService.getAccessTokenResponse(appid, code,
 				ACCESS_TOKEN_URL);
 
-		String openid = feiShuWebPageTokenResponse.getOpenid();
-		String unionid = feiShuWebPageTokenResponse.getUnionid();
+		FeiShuWebPageUserinfoResponse feiShuWebPageUserinfoResponse = feiShuWebPageService.getUserInfo(USERINFO_URL,
+				appid, state, binding, remoteAddress, sessionId, feiShuWebPageTokenResponse);
+
+		String openId = feiShuWebPageUserinfoResponse.getOpenId();
+		String unionId = feiShuWebPageUserinfoResponse.getUnionId();
 
 		String accessToken = feiShuWebPageTokenResponse.getAccessToken();
 		String refreshToken = feiShuWebPageTokenResponse.getRefreshToken();
 		Integer expiresIn = feiShuWebPageTokenResponse.getExpiresIn();
-		String scope = feiShuWebPageTokenResponse.getScope();
 
 		OAuth2Authorization.Builder builder = OAuth2Authorization.withRegisteredClient(registeredClient);
-		builder.principalName(openid);
+		builder.principalName(openId);
 		builder.authorizationGrantType(OAuth2FeiShuWebPageAuthenticationToken.FEISHU_WEBPAGE);
 
 		AbstractAuthenticationToken abstractAuthenticationToken = feiShuWebPageService.authenticationToken(
-				clientPrincipal, additionalParameters, grantAuthenticationToken.getDetails(), appid, code, openid, null,
-				unionid, accessToken, refreshToken, expiresIn, scope);
+				clientPrincipal, additionalParameters, grantAuthenticationToken.getDetails(), appid, code, openId, null,
+				unionId, accessToken, refreshToken, expiresIn);
 
 		builder.attribute(Principal.class.getName(), abstractAuthenticationToken);
 		builder.attribute(AUTHORIZED_SCOPE_KEY, requestedScopes);

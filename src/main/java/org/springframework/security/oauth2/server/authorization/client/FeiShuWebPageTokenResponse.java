@@ -39,46 +39,33 @@ public class FeiShuWebPageTokenResponse implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * 网页授权接口调用凭证,注意：此access_token与基础支持的access_token不同
+	 * 飞书服务器授权的access_token，用于调用其他接口
 	 */
 	@JsonProperty("access_token")
 	private String accessToken;
 
 	/**
-	 * access_token接口调用凭证超时时间，单位（秒）
+	 * OAuth 2.0协议规定的Token类型，固定为 Bearer
+	 */
+	@JsonProperty("token_type")
+	private String tokenType;
+
+	/**
+	 * access_token 的有效期，三方应用服务器需要根据此返回值来控制access_token的有效时间
 	 */
 	@JsonProperty("expires_in")
 	private Integer expiresIn;
 
 	/**
-	 * 用户刷新access_token
+	 * 当 access_token 过期时，通过 refresh_token来刷新，获取新的 access_token
 	 */
 	@JsonProperty("refresh_token")
 	private String refreshToken;
 
 	/**
-	 * 授权范围
+	 * refresh_token 的有效期
 	 */
-	private String scope;
-
-	/**
-	 * 用户唯一标识
-	 */
-	private String openid;
-
-	/**
-	 * 用户在开放平台的唯一标识符
-	 */
-	private String unionid;
-
-	/**
-	 * 错误码
-	 */
-	private String errcode;
-
-	/**
-	 * 错误信息
-	 */
-	private String errmsg;
+	@JsonProperty("refresh_expires_in")
+	private Integer refreshExpiresIn;
 
 }

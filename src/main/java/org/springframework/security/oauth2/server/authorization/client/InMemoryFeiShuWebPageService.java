@@ -23,44 +23,46 @@ package org.springframework.security.oauth2.server.authorization.client;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.FeiShuWebPageAuthenticationToken;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.OAuth2AccessToken;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.OAuth2Error;
 import org.springframework.security.oauth2.core.endpoint.OAuth2AccessTokenResponse;
 import org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames;
-import org.springframework.security.oauth2.core.endpoint.OAuth2FeiShuWebPageParameterNames;
 import org.springframework.security.oauth2.core.http.converter.OAuth2AccessTokenResponseHttpMessageConverter;
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers.OAuth2AuthorizationServerConfigurer;
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers.OAuth2TokenEndpointConfigurer;
 import org.springframework.security.oauth2.server.authorization.exception.AppidFeiShuWebPageException;
-import org.springframework.security.oauth2.server.authorization.exception.RedirectUriFeiShuWebPageException;
 import org.springframework.security.oauth2.server.authorization.exception.RedirectFeiShuWebPageException;
+import org.springframework.security.oauth2.server.authorization.exception.RedirectUriFeiShuWebPageException;
 import org.springframework.security.oauth2.server.authorization.properties.FeiShuWebPageProperties;
 import org.springframework.security.oauth2.server.authorization.web.authentication.OAuth2FeiShuWebPageEndpointUtils;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.util.Assert;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriUtils;
+import org.springframework.web.client.RestTemplateFeiShuWebPage;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -70,6 +72,7 @@ import java.util.Map;
  * @author xuxiaowei
  * @since 0.0.1
  */
+@Slf4j
 public class InMemoryFeiShuWebPageService implements FeiShuWebPageService {
 
 	private final FeiShuWebPageProperties feiShuWebPageProperties;
@@ -97,8 +100,6 @@ public class InMemoryFeiShuWebPageService implements FeiShuWebPageService {
 	 * "https://open.feishu.cn/document/common-capabilities/sso/web-application-sso/web-app-overview">登录流程</a>
 	 * @param expiresIn 过期时间，<a href=
 	 * "https://open.feishu.cn/document/common-capabilities/sso/web-application-sso/web-app-overview">登录流程</a>
-	 * @param scope {@link OAuth2ParameterNames#SCOPE}，授权范围，<a href=
-	 * "https://open.feishu.cn/document/common-capabilities/sso/web-application-sso/web-app-overview">登录流程</a>
 	 * @return 返回 认证信息
 	 * @throws OAuth2AuthenticationException OAuth 2.1 可处理的异常，可使用
 	 * {@link OAuth2AuthorizationServerConfigurer#tokenEndpoint(Customizer)} 中的
@@ -108,8 +109,7 @@ public class InMemoryFeiShuWebPageService implements FeiShuWebPageService {
 	@Override
 	public AbstractAuthenticationToken authenticationToken(Authentication clientPrincipal,
 			Map<String, Object> additionalParameters, Object details, String appid, String code, String openid,
-			Object credentials, String unionid, String accessToken, String refreshToken, Integer expiresIn,
-			String scope) {
+			Object credentials, String unionid, String accessToken, String refreshToken, Integer expiresIn) {
 		List<GrantedAuthority> authorities = new ArrayList<>();
 		SimpleGrantedAuthority authority = new SimpleGrantedAuthority(feiShuWebPageProperties.getDefaultRole());
 		authorities.add(authority);
@@ -143,22 +143,24 @@ public class InMemoryFeiShuWebPageService implements FeiShuWebPageService {
 	 */
 	@Override
 	public FeiShuWebPageTokenResponse getAccessTokenResponse(String appid, String code, String accessTokenUrl) {
-		Map<String, String> uriVariables = new HashMap<>(8);
+		MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
 
 		String secret = getSecretByAppid(appid);
 		String redirectUri = getRedirectUriByAppid(appid);
 
-		uriVariables.put(OAuth2ParameterNames.CLIENT_ID, appid);
-		uriVariables.put(OAuth2ParameterNames.CLIENT_SECRET, secret);
-		uriVariables.put(OAuth2ParameterNames.CODE, code);
-		uriVariables.put(OAuth2ParameterNames.REDIRECT_URI, redirectUri);
+		body.put(OAuth2ParameterNames.CLIENT_ID, Collections.singletonList(appid));
+		body.put(OAuth2ParameterNames.CLIENT_SECRET, Collections.singletonList(secret));
+		body.put(OAuth2ParameterNames.CODE, Collections.singletonList(code));
+		body.put(OAuth2ParameterNames.GRANT_TYPE,
+				Collections.singletonList(AuthorizationGrantType.AUTHORIZATION_CODE.getValue()));
+		body.put(OAuth2ParameterNames.REDIRECT_URI, Collections.singletonList(redirectUri));
 
 		RestTemplate restTemplate = new RestTemplate();
 		HttpHeaders httpHeaders = new HttpHeaders();
 		httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-		HttpEntity<?> httpEntity = new HttpEntity<>(httpHeaders);
+		HttpEntity<MultiValueMap<String, String>> httpEntity = new HttpEntity<>(body, httpHeaders);
 
-		String forObject = restTemplate.postForObject(accessTokenUrl, httpEntity, String.class, uriVariables);
+		String forObject = restTemplate.postForObject(accessTokenUrl, httpEntity, String.class);
 
 		FeiShuWebPageTokenResponse feiShuWebPageTokenResponse;
 		ObjectMapper objectMapper = new ObjectMapper();
@@ -172,14 +174,58 @@ public class InMemoryFeiShuWebPageService implements FeiShuWebPageService {
 			throw new OAuth2AuthenticationException(error, e);
 		}
 
-		String openid = feiShuWebPageTokenResponse.getOpenid();
-		if (openid == null) {
-			OAuth2Error error = new OAuth2Error(feiShuWebPageTokenResponse.getErrcode(),
-					feiShuWebPageTokenResponse.getErrmsg(), OAuth2FeiShuWebPageEndpointUtils.AUTH_CODE2SESSION_URI);
+		String accessToken = feiShuWebPageTokenResponse.getAccessToken();
+		if (accessToken == null) {
+			OAuth2Error error = new OAuth2Error(OAuth2FeiShuWebPageEndpointUtils.ERROR_CODE, "飞书授权失败",
+					OAuth2FeiShuWebPageEndpointUtils.AUTH_CODE2SESSION_URI);
 			throw new OAuth2AuthenticationException(error);
 		}
 
 		return feiShuWebPageTokenResponse;
+	}
+
+	/**
+	 * 获取授权用户的资料
+	 * @param userinfoUrl 用户信息接口
+	 * @param appid AppID(飞书Gitee client_id)
+	 * @param state 状态码
+	 * @param binding 是否绑定，需要使用者自己去拓展
+	 * @param remoteAddress 用户IP
+	 * @param sessionId SessionID
+	 * @param feiShuWebPageTokenResponse 飞书 Token
+	 * @see <a href=
+	 * "https://open.feishu.cn/document/common-capabilities/sso/api/get-user-info">获取用户信息</a>
+	 * @return 返回授权用户的资料
+	 */
+	@Override
+	public FeiShuWebPageUserinfoResponse getUserInfo(String userinfoUrl, String appid, String state, String binding,
+			String remoteAddress, String sessionId, FeiShuWebPageTokenResponse feiShuWebPageTokenResponse) {
+		String accessToken = feiShuWebPageTokenResponse.getAccessToken();
+
+		RestTemplateFeiShuWebPage restTemplate = new RestTemplateFeiShuWebPage();
+		HttpHeaders httpHeaders = new HttpHeaders();
+		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+		httpHeaders.setBearerAuth(accessToken);
+		HttpEntity<HttpHeaders> httpEntity = new HttpEntity<>(httpHeaders);
+
+		FeiShuWebPageUserinfoResponse feiShuWebPageUserinfoResponse;
+		try {
+			feiShuWebPageUserinfoResponse = restTemplate.getForObject(userinfoUrl, httpEntity,
+					FeiShuWebPageUserinfoResponse.class);
+		}
+		catch (Exception e) {
+			OAuth2Error error = new OAuth2Error(OAuth2FeiShuWebPageEndpointUtils.ERROR_CODE,
+					"使用Token：" + accessToken + " 获取用户信息异常", OAuth2FeiShuWebPageEndpointUtils.AUTH_CODE2SESSION_URI);
+			throw new OAuth2AuthenticationException(error, e);
+		}
+
+		if (feiShuWebPageUserinfoResponse == null) {
+			OAuth2Error error = new OAuth2Error(OAuth2FeiShuWebPageEndpointUtils.ERROR_CODE,
+					"使用Token：" + accessToken + " 获取用户信息异常", OAuth2FeiShuWebPageEndpointUtils.AUTH_CODE2SESSION_URI);
+			throw new OAuth2AuthenticationException(error);
+		}
+
+		return feiShuWebPageUserinfoResponse;
 	}
 
 	/**
@@ -282,7 +328,7 @@ public class InMemoryFeiShuWebPageService implements FeiShuWebPageService {
 		String redirectUriPrefix = feiShuWebPage.getRedirectUriPrefix();
 
 		if (StringUtils.hasText(redirectUriPrefix)) {
-			return UriUtils.encode(redirectUriPrefix + "/" + appid, StandardCharsets.UTF_8);
+			return redirectUriPrefix + "/" + appid;
 		}
 		else {
 			OAuth2Error error = new OAuth2Error(OAuth2FeiShuWebPageEndpointUtils.ERROR_CODE, "重定向地址前缀不能为空", null);
