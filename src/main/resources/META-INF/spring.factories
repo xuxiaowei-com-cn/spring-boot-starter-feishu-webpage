@@ -1,0 +1,5 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  org.springframework.security.oauth2.server.authorization.config.annotation.web.configuration.OAuth2FeiShuWebPageConfiguration,\
+  org.springframework.security.oauth2.server.authorization.http.FeiShuWebPageAuthorizeHttpFilter,\
+  org.springframework.security.oauth2.server.authorization.http.FeiShuWebPageCodeHttpFilter,\
+  org.springframework.security.oauth2.server.authorization.properties.FeiShuWebPageProperties
