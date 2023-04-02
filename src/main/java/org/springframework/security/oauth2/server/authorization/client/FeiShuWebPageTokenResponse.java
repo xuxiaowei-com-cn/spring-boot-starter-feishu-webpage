@@ -68,4 +68,9 @@ public class FeiShuWebPageTokenResponse implements Serializable {
 	@JsonProperty("refresh_expires_in")
 	private Integer refreshExpiresIn;
 
+	/**
+	 * 获取用户信息
+	 */
+	private FeiShuWebPageUserinfoResponse userinfo;
+
 }

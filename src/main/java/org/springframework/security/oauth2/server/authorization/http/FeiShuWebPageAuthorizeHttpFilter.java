@@ -29,12 +29,12 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.oauth2.core.endpoint.OAuth2FeiShuWebPageParameterNames;
 import org.springframework.security.oauth2.server.authorization.client.FeiShuWebPageService;
 import org.springframework.stereotype.Component;
 import org.springframework.util.AntPathMatcher;
 
 import java.io.IOException;
-import java.util.UUID;
 
 /**
  * 飞书跳转到飞书授权页面
@@ -85,7 +85,12 @@ public class FeiShuWebPageAuthorizeHttpFilter extends HttpFilter {
 
 			String redirectUri = feiShuWebPageService.getRedirectUriByAppid(appid);
 
-			String state = UUID.randomUUID().toString();
+			String binding = request.getParameter(OAuth2FeiShuWebPageParameterNames.BINDING);
+
+			String state = feiShuWebPageService.stateGenerate(request, response, appid);
+			feiShuWebPageService.storeBinding(request, response, appid, state, binding);
+			feiShuWebPageService.storeUsers(request, response, appid, state, binding);
+
 			String url = String.format(AUTHORIZE_URL, appid, redirectUri, state);
 
 			log.info("redirectUrl：{}", url);

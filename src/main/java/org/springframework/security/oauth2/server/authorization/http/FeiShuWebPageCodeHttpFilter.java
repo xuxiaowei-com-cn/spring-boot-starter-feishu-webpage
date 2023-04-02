@@ -61,7 +61,7 @@ public class FeiShuWebPageCodeHttpFilter extends HttpFilter {
 
 	public static final String PREFIX_URL = "/feishu-webpage/code";
 
-	public static final String TOKEN_URL = "/oauth2/token?grant_type={grant_type}&appid={appid}&code={code}&state={state}&client_id={client_id}&client_secret={client_secret}&remote_address={remote_address}&session_id={session_id}";
+	public static final String TOKEN_URL = "/oauth2/token?grant_type={grant_type}&appid={appid}&code={code}&state={state}&client_id={client_id}&client_secret={client_secret}&remote_address={remote_address}&session_id={session_id}&binding={binding}";
 
 	/**
 	 * 飞书使用code获取授权凭证URL前缀
@@ -97,11 +97,18 @@ public class FeiShuWebPageCodeHttpFilter extends HttpFilter {
 			String state = request.getParameter(OAuth2ParameterNames.STATE);
 			String grantType = FEISHU_WEBPAGE.getValue();
 
-			FeiShuWebPageProperties.FeiShuWebPage offiaccount = feiShuWebPageService.getFeiShuWebPageByAppid(appid);
-			String clientId = offiaccount.getClientId();
-			String clientSecret = offiaccount.getClientSecret();
-			String tokenUrlPrefix = offiaccount.getTokenUrlPrefix();
-			String scope = offiaccount.getScope();
+			boolean valid = feiShuWebPageService.stateValid(request, response, appid, code, state);
+			if (!valid) {
+				return;
+			}
+
+			String binding = feiShuWebPageService.getBinding(request, response, appid, code, state);
+
+			FeiShuWebPageProperties.FeiShuWebPage feiShuWebPage = feiShuWebPageService.getFeiShuWebPageByAppid(appid);
+			String clientId = feiShuWebPage.getClientId();
+			String clientSecret = feiShuWebPage.getClientSecret();
+			String tokenUrlPrefix = feiShuWebPage.getTokenUrlPrefix();
+			String scope = feiShuWebPage.getScope();
 
 			String remoteHost = request.getRemoteHost();
 			HttpSession session = request.getSession(false);
@@ -116,6 +123,7 @@ public class FeiShuWebPageCodeHttpFilter extends HttpFilter {
 			uriVariables.put(OAuth2ParameterNames.CLIENT_SECRET, clientSecret);
 			uriVariables.put(OAuth2FeiShuWebPageParameterNames.REMOTE_ADDRESS, remoteHost);
 			uriVariables.put(OAuth2FeiShuWebPageParameterNames.SESSION_ID, session == null ? "" : session.getId());
+			uriVariables.put(OAuth2FeiShuWebPageParameterNames.BINDING, binding);
 
 			OAuth2AccessTokenResponse oauth2AccessTokenResponse = feiShuWebPageService
 				.getOAuth2AccessTokenResponse(request, response, tokenUrlPrefix, TOKEN_URL, uriVariables);
@@ -123,7 +131,8 @@ public class FeiShuWebPageCodeHttpFilter extends HttpFilter {
 				return;
 			}
 
-			feiShuWebPageService.sendRedirect(request, response, uriVariables, oauth2AccessTokenResponse, offiaccount);
+			feiShuWebPageService.sendRedirect(request, response, uriVariables, oauth2AccessTokenResponse,
+					feiShuWebPage);
 			return;
 		}
 

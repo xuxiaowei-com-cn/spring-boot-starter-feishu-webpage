@@ -61,10 +61,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.client.RestTemplateFeiShuWebPage;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 飞书 账户服务接口 基于内存的实现
@@ -79,6 +76,239 @@ public class InMemoryFeiShuWebPageService implements FeiShuWebPageService {
 
 	public InMemoryFeiShuWebPageService(FeiShuWebPageProperties feiShuWebPageProperties) {
 		this.feiShuWebPageProperties = feiShuWebPageProperties;
+	}
+
+	/**
+	 * 根据 appid 获取重定向的地址
+	 * @param appid 飞书ID
+	 * @return 返回重定向的地址
+	 * @throws OAuth2AuthenticationException OAuth 2.1 可处理的异常，可使用
+	 * {@link OAuth2AuthorizationServerConfigurer#tokenEndpoint(Customizer)} 中的
+	 * {@link OAuth2TokenEndpointConfigurer#errorResponseHandler(AuthenticationFailureHandler)}
+	 * 拦截处理此异常
+	 */
+	@Override
+	public String getRedirectUriByAppid(String appid) throws OAuth2AuthenticationException {
+		FeiShuWebPageProperties.FeiShuWebPage feiShuWebPage = getFeiShuWebPageByAppid(appid);
+		String redirectUriPrefix = feiShuWebPage.getRedirectUriPrefix();
+
+		if (StringUtils.hasText(redirectUriPrefix)) {
+			return redirectUriPrefix + "/" + appid;
+		}
+		else {
+			OAuth2Error error = new OAuth2Error(OAuth2FeiShuWebPageEndpointUtils.ERROR_CODE, "重定向地址前缀不能为空", null);
+			throw new RedirectUriFeiShuWebPageException(error);
+		}
+	}
+
+	/**
+	 * 生成状态码
+	 * @param request 请求
+	 * @param response 响应
+	 * @param appid 开放平台 ID
+	 * @return 返回生成的授权码
+	 */
+	@Override
+	public String stateGenerate(HttpServletRequest request, HttpServletResponse response, String appid) {
+		return UUID.randomUUID().toString();
+	}
+
+	/**
+	 * 储存绑定参数
+	 * @param request 请求
+	 * @param response 响应
+	 * @param appid 开放平台 ID
+	 * @param state 状态码
+	 * @param binding 绑定参数
+	 */
+	@Override
+	public void storeBinding(HttpServletRequest request, HttpServletResponse response, String appid, String state,
+			String binding) {
+
+	}
+
+	/**
+	 * 储存操作用户
+	 * @param request 请求
+	 * @param response 响应
+	 * @param appid 开放平台 ID
+	 * @param state 状态码
+	 * @param binding 绑定参数
+	 */
+	@Override
+	public void storeUsers(HttpServletRequest request, HttpServletResponse response, String appid, String state,
+			String binding) {
+
+	}
+
+	/**
+	 * 状态码验证（返回 {@link Boolean#FALSE} 时，将终止后面需要执行的代码）
+	 * @param request 请求
+	 * @param response 响应
+	 * @param appid 开放平台 ID
+	 * @param code 授权码
+	 * @param state 状态码
+	 * @return 返回 状态码验证结果
+	 */
+	@Override
+	public boolean stateValid(HttpServletRequest request, HttpServletResponse response, String appid, String code,
+			String state) {
+		return true;
+	}
+
+	/**
+	 * 获取 绑定参数
+	 * @param request 请求
+	 * @param response 响应
+	 * @param appid 开放平台 ID
+	 * @param code 授权码
+	 * @param state 状态码
+	 * @return 返回 绑定参数
+	 */
+	@Override
+	public String getBinding(HttpServletRequest request, HttpServletResponse response, String appid, String code,
+			String state) {
+		return null;
+	}
+
+	/**
+	 * 根据 appid 获取 飞书属性配置
+	 * @param appid 飞书ID
+	 * @return 返回 飞书属性配置
+	 * @throws OAuth2AuthenticationException OAuth 2.1 可处理的异常，可使用
+	 * {@link OAuth2AuthorizationServerConfigurer#tokenEndpoint(Customizer)} 中的
+	 * {@link OAuth2TokenEndpointConfigurer#errorResponseHandler(AuthenticationFailureHandler)}
+	 * 拦截处理此异常
+	 */
+	@Override
+	public FeiShuWebPageProperties.FeiShuWebPage getFeiShuWebPageByAppid(String appid) {
+		List<FeiShuWebPageProperties.FeiShuWebPage> list = feiShuWebPageProperties.getList();
+		if (list == null) {
+			OAuth2Error error = new OAuth2Error(OAuth2FeiShuWebPageEndpointUtils.ERROR_CODE, "appid 未配置", null);
+			throw new AppidFeiShuWebPageException(error);
+		}
+
+		for (FeiShuWebPageProperties.FeiShuWebPage feiShuWebPage : list) {
+			if (appid.equals(feiShuWebPage.getAppid())) {
+				return feiShuWebPage;
+			}
+		}
+		OAuth2Error error = new OAuth2Error(OAuth2FeiShuWebPageEndpointUtils.ERROR_CODE, "未匹配到 appid", null);
+		throw new AppidFeiShuWebPageException(error);
+	}
+
+	/**
+	 * 获取 OAuth 2.1 授权 Token（如果不想执行此方法后面的内容，可返回 null）
+	 * @param request 请求
+	 * @param response 响应
+	 * @param tokenUrlPrefix 获取 Token URL 前缀
+	 * @param tokenUrl Token URL
+	 * @param uriVariables 参数
+	 * @return 返回 OAuth 2.1 授权 Token
+	 * @throws OAuth2AuthenticationException OAuth 2.1 可处理的异常，可使用
+	 * {@link OAuth2AuthorizationServerConfigurer#tokenEndpoint(Customizer)} 中的
+	 * {@link OAuth2TokenEndpointConfigurer#errorResponseHandler(AuthenticationFailureHandler)}
+	 * 拦截处理此异常
+	 */
+	@SuppressWarnings("AlibabaLowerCamelCaseVariableNaming")
+	@Override
+	public OAuth2AccessTokenResponse getOAuth2AccessTokenResponse(HttpServletRequest request,
+			HttpServletResponse response, String tokenUrlPrefix, String tokenUrl, Map<String, String> uriVariables)
+			throws OAuth2AuthenticationException {
+
+		HttpHeaders httpHeaders = new HttpHeaders();
+		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+		HttpEntity<?> httpEntity = new HttpEntity<>(httpHeaders);
+
+		RestTemplate restTemplate = new RestTemplate();
+
+		List<HttpMessageConverter<?>> messageConverters = restTemplate.getMessageConverters();
+		messageConverters.add(5, new OAuth2AccessTokenResponseHttpMessageConverter());
+
+		return restTemplate.postForObject(tokenUrlPrefix + tokenUrl, httpEntity, OAuth2AccessTokenResponse.class,
+				uriVariables);
+	}
+
+	/**
+	 * 根据 AppID、code、jsCode2SessionUrl 获取Token
+	 * @param appid AppID，<a href=
+	 * "https://open.feishu.cn/document/common-capabilities/sso/web-application-sso/web-app-overview">登录流程</a>
+	 * @param code 授权码，<a href=
+	 * "https://open.feishu.cn/document/common-capabilities/sso/web-application-sso/web-app-overview">登录流程</a>
+	 * @param accessTokenUrl <a href=
+	 * "https://open.feishu.cn/document/common-capabilities/sso/web-application-sso/web-app-overview">登录流程</a>
+	 * @return 返回 飞书授权结果
+	 * @throws OAuth2AuthenticationException OAuth 2.1 可处理的异常，可使用
+	 * {@link OAuth2AuthorizationServerConfigurer#tokenEndpoint(Customizer)} 中的
+	 * {@link OAuth2TokenEndpointConfigurer#errorResponseHandler(AuthenticationFailureHandler)}
+	 * 拦截处理此异常
+	 */
+	@Override
+	public FeiShuWebPageTokenResponse getAccessTokenResponse(String appid, String code, String accessTokenUrl,
+			String userinfoUrl, String state, String binding, String remoteAddress, String sessionId) {
+		MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
+
+		String secret = getSecretByAppid(appid);
+		String redirectUri = getRedirectUriByAppid(appid);
+
+		body.put(OAuth2ParameterNames.CLIENT_ID, Collections.singletonList(appid));
+		body.put(OAuth2ParameterNames.CLIENT_SECRET, Collections.singletonList(secret));
+		body.put(OAuth2ParameterNames.CODE, Collections.singletonList(code));
+		body.put(OAuth2ParameterNames.GRANT_TYPE,
+				Collections.singletonList(AuthorizationGrantType.AUTHORIZATION_CODE.getValue()));
+		body.put(OAuth2ParameterNames.REDIRECT_URI, Collections.singletonList(redirectUri));
+
+		RestTemplate restTemplate = new RestTemplate();
+		HttpHeaders httpHeaders = new HttpHeaders();
+		httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+		HttpEntity<MultiValueMap<String, String>> httpEntity = new HttpEntity<>(body, httpHeaders);
+
+		String forObject = restTemplate.postForObject(accessTokenUrl, httpEntity, String.class);
+
+		FeiShuWebPageTokenResponse feiShuWebPageTokenResponse;
+		ObjectMapper objectMapper = new ObjectMapper();
+		objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+		try {
+			feiShuWebPageTokenResponse = objectMapper.readValue(forObject, FeiShuWebPageTokenResponse.class);
+		}
+		catch (JsonProcessingException e) {
+			OAuth2Error error = new OAuth2Error(OAuth2FeiShuWebPageEndpointUtils.ERROR_CODE,
+					"使用飞书授权code：" + code + " 获取Token异常", OAuth2FeiShuWebPageEndpointUtils.AUTH_CODE2SESSION_URI);
+			throw new OAuth2AuthenticationException(error, e);
+		}
+
+		String accessToken = feiShuWebPageTokenResponse.getAccessToken();
+		if (accessToken == null) {
+			OAuth2Error error = new OAuth2Error(OAuth2FeiShuWebPageEndpointUtils.ERROR_CODE, "飞书授权失败",
+					OAuth2FeiShuWebPageEndpointUtils.AUTH_CODE2SESSION_URI);
+			throw new OAuth2AuthenticationException(error);
+		}
+
+		RestTemplateFeiShuWebPage restTemplateFeiShuWebPage = new RestTemplateFeiShuWebPage();
+
+		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+		httpHeaders.setBearerAuth(accessToken);
+
+		FeiShuWebPageUserinfoResponse feiShuWebPageUserinfoResponse;
+		try {
+			feiShuWebPageUserinfoResponse = restTemplateFeiShuWebPage.getForObject(userinfoUrl, httpEntity,
+					FeiShuWebPageUserinfoResponse.class);
+		}
+		catch (Exception e) {
+			OAuth2Error error = new OAuth2Error(OAuth2FeiShuWebPageEndpointUtils.ERROR_CODE,
+					"使用Token：" + accessToken + " 获取用户信息异常", OAuth2FeiShuWebPageEndpointUtils.AUTH_CODE2SESSION_URI);
+			throw new OAuth2AuthenticationException(error, e);
+		}
+
+		if (feiShuWebPageUserinfoResponse == null) {
+			OAuth2Error error = new OAuth2Error(OAuth2FeiShuWebPageEndpointUtils.ERROR_CODE,
+					"使用Token：" + accessToken + " 获取用户信息异常", OAuth2FeiShuWebPageEndpointUtils.AUTH_CODE2SESSION_URI);
+			throw new OAuth2AuthenticationException(error);
+		}
+
+		feiShuWebPageTokenResponse.setUserinfo(feiShuWebPageUserinfoResponse);
+
+		return feiShuWebPageTokenResponse;
 	}
 
 	/**
@@ -128,107 +358,6 @@ public class InMemoryFeiShuWebPageService implements FeiShuWebPageService {
 	}
 
 	/**
-	 * 根据 AppID、code、jsCode2SessionUrl 获取Token
-	 * @param appid AppID，<a href=
-	 * "https://open.feishu.cn/document/common-capabilities/sso/web-application-sso/web-app-overview">登录流程</a>
-	 * @param code 授权码，<a href=
-	 * "https://open.feishu.cn/document/common-capabilities/sso/web-application-sso/web-app-overview">登录流程</a>
-	 * @param accessTokenUrl <a href=
-	 * "https://open.feishu.cn/document/common-capabilities/sso/web-application-sso/web-app-overview">登录流程</a>
-	 * @return 返回 飞书授权结果
-	 * @throws OAuth2AuthenticationException OAuth 2.1 可处理的异常，可使用
-	 * {@link OAuth2AuthorizationServerConfigurer#tokenEndpoint(Customizer)} 中的
-	 * {@link OAuth2TokenEndpointConfigurer#errorResponseHandler(AuthenticationFailureHandler)}
-	 * 拦截处理此异常
-	 */
-	@Override
-	public FeiShuWebPageTokenResponse getAccessTokenResponse(String appid, String code, String accessTokenUrl) {
-		MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
-
-		String secret = getSecretByAppid(appid);
-		String redirectUri = getRedirectUriByAppid(appid);
-
-		body.put(OAuth2ParameterNames.CLIENT_ID, Collections.singletonList(appid));
-		body.put(OAuth2ParameterNames.CLIENT_SECRET, Collections.singletonList(secret));
-		body.put(OAuth2ParameterNames.CODE, Collections.singletonList(code));
-		body.put(OAuth2ParameterNames.GRANT_TYPE,
-				Collections.singletonList(AuthorizationGrantType.AUTHORIZATION_CODE.getValue()));
-		body.put(OAuth2ParameterNames.REDIRECT_URI, Collections.singletonList(redirectUri));
-
-		RestTemplate restTemplate = new RestTemplate();
-		HttpHeaders httpHeaders = new HttpHeaders();
-		httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-		HttpEntity<MultiValueMap<String, String>> httpEntity = new HttpEntity<>(body, httpHeaders);
-
-		String forObject = restTemplate.postForObject(accessTokenUrl, httpEntity, String.class);
-
-		FeiShuWebPageTokenResponse feiShuWebPageTokenResponse;
-		ObjectMapper objectMapper = new ObjectMapper();
-		objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-		try {
-			feiShuWebPageTokenResponse = objectMapper.readValue(forObject, FeiShuWebPageTokenResponse.class);
-		}
-		catch (JsonProcessingException e) {
-			OAuth2Error error = new OAuth2Error(OAuth2FeiShuWebPageEndpointUtils.ERROR_CODE,
-					"使用飞书授权code：" + code + " 获取Token异常", OAuth2FeiShuWebPageEndpointUtils.AUTH_CODE2SESSION_URI);
-			throw new OAuth2AuthenticationException(error, e);
-		}
-
-		String accessToken = feiShuWebPageTokenResponse.getAccessToken();
-		if (accessToken == null) {
-			OAuth2Error error = new OAuth2Error(OAuth2FeiShuWebPageEndpointUtils.ERROR_CODE, "飞书授权失败",
-					OAuth2FeiShuWebPageEndpointUtils.AUTH_CODE2SESSION_URI);
-			throw new OAuth2AuthenticationException(error);
-		}
-
-		return feiShuWebPageTokenResponse;
-	}
-
-	/**
-	 * 获取授权用户的资料
-	 * @param userinfoUrl 用户信息接口
-	 * @param appid AppID(飞书Gitee client_id)
-	 * @param state 状态码
-	 * @param binding 是否绑定，需要使用者自己去拓展
-	 * @param remoteAddress 用户IP
-	 * @param sessionId SessionID
-	 * @param feiShuWebPageTokenResponse 飞书 Token
-	 * @see <a href=
-	 * "https://open.feishu.cn/document/common-capabilities/sso/api/get-user-info">获取用户信息</a>
-	 * @return 返回授权用户的资料
-	 */
-	@Override
-	public FeiShuWebPageUserinfoResponse getUserInfo(String userinfoUrl, String appid, String state, String binding,
-			String remoteAddress, String sessionId, FeiShuWebPageTokenResponse feiShuWebPageTokenResponse) {
-		String accessToken = feiShuWebPageTokenResponse.getAccessToken();
-
-		RestTemplateFeiShuWebPage restTemplate = new RestTemplateFeiShuWebPage();
-		HttpHeaders httpHeaders = new HttpHeaders();
-		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-		httpHeaders.setBearerAuth(accessToken);
-		HttpEntity<HttpHeaders> httpEntity = new HttpEntity<>(httpHeaders);
-
-		FeiShuWebPageUserinfoResponse feiShuWebPageUserinfoResponse;
-		try {
-			feiShuWebPageUserinfoResponse = restTemplate.getForObject(userinfoUrl, httpEntity,
-					FeiShuWebPageUserinfoResponse.class);
-		}
-		catch (Exception e) {
-			OAuth2Error error = new OAuth2Error(OAuth2FeiShuWebPageEndpointUtils.ERROR_CODE,
-					"使用Token：" + accessToken + " 获取用户信息异常", OAuth2FeiShuWebPageEndpointUtils.AUTH_CODE2SESSION_URI);
-			throw new OAuth2AuthenticationException(error, e);
-		}
-
-		if (feiShuWebPageUserinfoResponse == null) {
-			OAuth2Error error = new OAuth2Error(OAuth2FeiShuWebPageEndpointUtils.ERROR_CODE,
-					"使用Token：" + accessToken + " 获取用户信息异常", OAuth2FeiShuWebPageEndpointUtils.AUTH_CODE2SESSION_URI);
-			throw new OAuth2AuthenticationException(error);
-		}
-
-		return feiShuWebPageUserinfoResponse;
-	}
-
-	/**
 	 * 授权成功重定向方法
 	 * @param request 请求
 	 * @param response 响应
@@ -253,86 +382,6 @@ public class InMemoryFeiShuWebPageService implements FeiShuWebPageService {
 		catch (IOException e) {
 			OAuth2Error error = new OAuth2Error(OAuth2FeiShuWebPageEndpointUtils.ERROR_CODE, "飞书重定向异常", null);
 			throw new RedirectFeiShuWebPageException(error, e);
-		}
-	}
-
-	/**
-	 * 根据 appid 获取 飞书属性配置
-	 * @param appid 飞书ID
-	 * @return 返回 飞书属性配置
-	 * @throws OAuth2AuthenticationException OAuth 2.1 可处理的异常，可使用
-	 * {@link OAuth2AuthorizationServerConfigurer#tokenEndpoint(Customizer)} 中的
-	 * {@link OAuth2TokenEndpointConfigurer#errorResponseHandler(AuthenticationFailureHandler)}
-	 * 拦截处理此异常
-	 */
-	@Override
-	public FeiShuWebPageProperties.FeiShuWebPage getFeiShuWebPageByAppid(String appid) {
-		List<FeiShuWebPageProperties.FeiShuWebPage> list = feiShuWebPageProperties.getList();
-		if (list == null) {
-			OAuth2Error error = new OAuth2Error(OAuth2FeiShuWebPageEndpointUtils.ERROR_CODE, "appid 未配置", null);
-			throw new AppidFeiShuWebPageException(error);
-		}
-
-		for (FeiShuWebPageProperties.FeiShuWebPage feiShuWebPage : list) {
-			if (appid.equals(feiShuWebPage.getAppid())) {
-				return feiShuWebPage;
-			}
-		}
-		OAuth2Error error = new OAuth2Error(OAuth2FeiShuWebPageEndpointUtils.ERROR_CODE, "未匹配到 appid", null);
-		throw new AppidFeiShuWebPageException(error);
-	}
-
-	/**
-	 * 获取 OAuth 2.1 授权 Token（如果不想执行此方法后面的内容，可返回 null）
-	 * @param request 请求
-	 * @param response 响应
-	 * @param tokenUrlPrefix 获取 Token URL 前缀
-	 * @param tokenUrl Token URL
-	 * @param uriVariables 参数
-	 * @return 返回 OAuth 2.1 授权 Token
-	 * @throws OAuth2AuthenticationException OAuth 2.1 可处理的异常，可使用
-	 * {@link OAuth2AuthorizationServerConfigurer#tokenEndpoint(Customizer)} 中的
-	 * {@link OAuth2TokenEndpointConfigurer#errorResponseHandler(AuthenticationFailureHandler)}
-	 * 拦截处理此异常
-	 */
-	@Override
-	public OAuth2AccessTokenResponse getOAuth2AccessTokenResponse(HttpServletRequest request,
-			HttpServletResponse response, String tokenUrlPrefix, String tokenUrl, Map<String, String> uriVariables)
-			throws OAuth2AuthenticationException {
-
-		HttpHeaders httpHeaders = new HttpHeaders();
-		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-		HttpEntity<?> httpEntity = new HttpEntity<>(httpHeaders);
-
-		RestTemplate restTemplate = new RestTemplate();
-
-		List<HttpMessageConverter<?>> messageConverters = restTemplate.getMessageConverters();
-		messageConverters.add(5, new OAuth2AccessTokenResponseHttpMessageConverter());
-
-		return restTemplate.postForObject(tokenUrlPrefix + tokenUrl, httpEntity, OAuth2AccessTokenResponse.class,
-				uriVariables);
-	}
-
-	/**
-	 * 根据 appid 获取重定向的地址
-	 * @param appid 飞书ID
-	 * @return 返回重定向的地址
-	 * @throws OAuth2AuthenticationException OAuth 2.1 可处理的异常，可使用
-	 * {@link OAuth2AuthorizationServerConfigurer#tokenEndpoint(Customizer)} 中的
-	 * {@link OAuth2TokenEndpointConfigurer#errorResponseHandler(AuthenticationFailureHandler)}
-	 * 拦截处理此异常
-	 */
-	@Override
-	public String getRedirectUriByAppid(String appid) throws OAuth2AuthenticationException {
-		FeiShuWebPageProperties.FeiShuWebPage feiShuWebPage = getFeiShuWebPageByAppid(appid);
-		String redirectUriPrefix = feiShuWebPage.getRedirectUriPrefix();
-
-		if (StringUtils.hasText(redirectUriPrefix)) {
-			return redirectUriPrefix + "/" + appid;
-		}
-		else {
-			OAuth2Error error = new OAuth2Error(OAuth2FeiShuWebPageEndpointUtils.ERROR_CODE, "重定向地址前缀不能为空", null);
-			throw new RedirectUriFeiShuWebPageException(error);
 		}
 	}
 
