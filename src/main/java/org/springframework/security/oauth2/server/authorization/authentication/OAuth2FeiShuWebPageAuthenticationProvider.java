@@ -149,10 +149,9 @@ public class OAuth2FeiShuWebPageAuthenticationProvider implements Authentication
 		}
 
 		FeiShuWebPageTokenResponse feiShuWebPageTokenResponse = feiShuWebPageService.getAccessTokenResponse(appid, code,
-				ACCESS_TOKEN_URL);
+				ACCESS_TOKEN_URL, USERINFO_URL, state, binding, remoteAddress, sessionId);
 
-		FeiShuWebPageUserinfoResponse feiShuWebPageUserinfoResponse = feiShuWebPageService.getUserInfo(USERINFO_URL,
-				appid, state, binding, remoteAddress, sessionId, feiShuWebPageTokenResponse);
+		FeiShuWebPageUserinfoResponse feiShuWebPageUserinfoResponse = feiShuWebPageTokenResponse.getUserinfo();
 
 		String openId = feiShuWebPageUserinfoResponse.getOpenId();
 		String unionId = feiShuWebPageUserinfoResponse.getUnionId();

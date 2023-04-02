@@ -96,7 +96,8 @@ public class OAuth2FeiShuWebPageAuthenticationConverter implements Authenticatio
 					&& !key.equals(OAuth2ParameterNames.CLIENT_SECRET)
 					&& !key.equals(OAuth2FeiShuWebPageParameterNames.APPID) && !key.equals(OAuth2ParameterNames.SCOPE)
 					&& !OAuth2FeiShuWebPageParameterNames.REMOTE_ADDRESS.equals(key)
-					&& !OAuth2FeiShuWebPageParameterNames.SESSION_ID.equals(key)) {
+					&& !OAuth2FeiShuWebPageParameterNames.SESSION_ID.equals(key)
+					&& !OAuth2FeiShuWebPageParameterNames.BINDING.equals(key)) {
 				additionalParameters.put(key, value.get(0));
 			}
 		});
