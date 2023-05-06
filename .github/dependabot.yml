@@ -10,3 +10,8 @@ updates:
     directory: "/" # Location of package manifests
     schedule:
       interval: "daily"
+    # https://docs.github.com/zh/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file#ignore
+    ignore:
+      - dependency-name: spring-security-oauth2-authorization-server
+        # spring-security-oauth2-authorization-server 1.0 不支持 JDK 8
+        versions: [ "1.x" ]
